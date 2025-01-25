@@ -14,16 +14,40 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-         // Créer les permissions
-         Permission::create(['name' => 'view users']);
-         Permission::create(['name' => 'edit users']);
-         Permission::create(['name' => 'delete users']);
+        // Créer les permissions
+        $permissions = [
+            'view data',
+            'add data',
+            'edit data',
+            'delete data',
+            'import data',
+            'export data',
+            'manage users',
+            'view audit',
+        ];
 
-         // Créer les rôles et assigner les permissions
-         $adminRole = Role::create(['name' => 'admin']);
-         $adminRole->givePermissionTo(['view users', 'edit users', 'delete users']);
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
+        }
 
-         $userRole = Role::create(['name' => 'user']);
-         $userRole->givePermissionTo(['view users']);
+        // Créer les rôles et assigner les permissions
+        $reader = Role::firstOrCreate(['name' => 'Reader']);
+        $reader->givePermissionTo(['view data']);
+
+        $writer = Role::firstOrCreate(['name' => 'Writer']);
+        $writer->givePermissionTo(['view data', 'add data']);
+
+        $superviser = Role::firstOrCreate(['name' => 'Superviser']);
+        $superviser->givePermissionTo([
+            'view data',
+            'add data',
+            'edit data',
+            'delete data',
+            'import data',
+            'export data',
+        ]);
+
+        $super = Role::firstOrCreate(['name' => 'Super']);
+        $super->givePermissionTo(Permission::all());
     }
 }
