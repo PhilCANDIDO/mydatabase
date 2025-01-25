@@ -52,7 +52,7 @@ new class extends Component
                     </x-slot>
 
                     <x-slot name="content">
-                        @ray('Welcome')
+                        <!-- Account Management -->
                         <x-dropdown-link :href="route('profile')" wire:navigate>
                             {{ __('Profile') }}
                         </x-dropdown-link>
