@@ -14,17 +14,21 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = User::where('email', 'admin@mysdatabase.test')->first();
+        $admin = User::where('email', 'admin@mydatabase.test')->first();
 
         if (!$admin) {
-            User::create([
+            $admin = User::create([  // Assignez le résultat de create() à $admin
                 'name' => 'Admin',
-                'email' => 'admin@mydatabase.test', // Change
-                'password' => Hash::make('azerty'), // Change
+                'email' => 'admin@mydatabase.test',
+                'password' => Hash::make('azerty'),
             ]);
             $this->command->info('Admin user created');
         } else {
             $this->command->info('Admin user already exists');
         }
+
+        // Assigner le rôle Super à l'admin
+        $admin->assignRole('Super');
+        $this->command->info('Admin assigned role: Super');
     }
 }

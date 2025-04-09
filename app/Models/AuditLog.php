@@ -31,8 +31,23 @@ class AuditLog extends Model
     // Pas de updated_at pour les logs d'audit
     public $timestamps = false;
 
+    /**
+     * Récupère l'utilisateur associé à cette action d'audit.
+     * La relation peut être null si l'utilisateur a été supprimé.
+     */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withDefault([
+            'name' => $this->username . ' (deleted)',
+        ]);
+    }
+    
+    /**
+     * Récupère le nom d'utilisateur pour l'affichage.
+     * Utilise le nom d'utilisateur stocké si l'utilisateur a été supprimé.
+     */
+    public function getUsernameForDisplay(): string
+    {
+        return $this->user_id ? $this->user->name : $this->username;
     }
 }
