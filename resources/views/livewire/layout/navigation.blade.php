@@ -33,11 +33,47 @@ new class extends Component
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    @if(auth()->check() && auth()->user()->hasRole('Super'))
+                        <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')" wire:navigate>
+                            {{ __('Gestion des Utilisateurs') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <!-- Language Selection Dropdown -->
+                <x-dropdown align="right" width="48">
+                    <x-slot name="trigger">
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                           <!-- {{ strtoupper(app()->getLocale()) }}    Affiche la langue actuelle -->
+                            @if ( strtoupper(app()->getLocale()) === 'FR')
+                                <x-icon name="flag-language-fr" class="h-5 w-5"/>
+                            @elseif ( strtoupper(app()->getLocale()) === 'EN')
+                                <x-icon name="flag-language-en" class="h-5 w-5"/>
+                            @endif
+                        </button>
+                    </x-slot>
+
+                    <x-slot name="content">
+                        @foreach(['en' => 'English', 'fr' => 'Français'] as $locale => $label)
+                            <form method="POST" action="{{ route('change.language') }}">
+                                @csrf
+                                <input type="hidden" name="locale" value="{{ $locale }}">
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    @if ($label === 'Français')
+                                        <x-icon name="flag-language-fr" class="h-5 w-5 mr-2"/>
+                                    @elseif ($label === 'English')
+                                        <x-icon name="flag-language-en" class="h-5 w-5 mr-2"/>
+                                    @endif
+                                    {{ $label }}
+                                </button>
+                            </form>
+                        @endforeach
+                    </x-slot>
+                </x-dropdown>
+
+                <!-- Settings Dropdown -->
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -52,6 +88,7 @@ new class extends Component
                     </x-slot>
 
                     <x-slot name="content">
+                        <!-- Account Management -->
                         <x-dropdown-link :href="route('profile')" wire:navigate>
                             {{ __('Profile') }}
                         </x-dropdown-link>
