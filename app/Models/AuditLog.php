@@ -19,7 +19,8 @@ class AuditLog extends Model
         'before_data',
         'after_data',
         'sql_command',
-        'ip_address'
+        'ip_address',
+        'created_at',
     ];
 
     protected $casts = [
@@ -27,6 +28,8 @@ class AuditLog extends Model
         'after_data' => 'array',
         'created_at' => 'datetime',
     ];
+
+    const UPDATED_AT = null;
     
     // Pas de updated_at pour les logs d'audit
     public $timestamps = false;
