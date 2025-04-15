@@ -14,9 +14,7 @@ class ProductFamilyController extends Controller
      */
     public function index()
     {
-        
-        $families = ProductFamily::orderBy('code')->get();
-        return view('product-families.index', compact('families'));
+        return view('product-families.index');
     }
 
     /**
@@ -24,7 +22,7 @@ class ProductFamilyController extends Controller
      */
     public function create()
     {
-        //
+        return view('product-families.create');
     }
 
     /**
@@ -56,7 +54,6 @@ class ProductFamilyController extends Controller
      */
     public function update(Request $request, ProductFamily $family)
     {
-        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',

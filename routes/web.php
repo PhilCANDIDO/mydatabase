@@ -57,8 +57,8 @@ Route::middleware(['auth'])->group(function () {
 // Routes pour la gestion des familles de produits
 Route::middleware(['auth', 'role:Superviser|Super'])->prefix('product-families')->group(function () {
     Route::get('/', [ProductFamilyController::class, 'index'])->name('product-families.index');
+    Route::get('/create', [ProductFamilyController::class, 'create'])->name('product-families.create');
     Route::get('/{family}/edit', [ProductFamilyController::class, 'edit'])->name('product-families.edit');
-    Route::put('/{family}', [ProductFamilyController::class, 'update'])->name('product-families.update');
 });
 
 // Routes pour la gestion du référentiel de données
