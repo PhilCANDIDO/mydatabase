@@ -67,31 +67,32 @@ class Product extends Model
         });
     }
     
-    // Méthodes pour l'accès aux données spécifiques
+    // Pour les choix uniques (déjà existants, à utiliser comme modèle)
     public function getApplicationAttribute()
     {
         return $this->product_family_id === 2 ? // Assurez-vous que 2 est l'ID de PM
             ($this->specific_attributes['application'] ?? null) : null;
     }
-    
-    public function getGenreAttribute()
+
+    // Pour les choix multiples - nouveau
+    public function getFamilleOlfactiveAttribute()
     {
-        return $this->product_family_id === 5 ? // Assurez-vous que 5 est l'ID de U
-            ($this->specific_attributes['genre'] ?? null) : null;
+        return $this->specific_attributes['famille_olfactive'] ?? [];
     }
-    
-    // Définisseurs pour les attributs spécifiques
+
+    // Setter pour un choix unique (déjà existant)
     public function setApplicationAttribute($value)
     {
         $attributes = $this->specific_attributes ?: [];
         $attributes['application'] = $value;
         $this->specific_attributes = $attributes;
     }
-    
-    public function setGenreAttribute($value)
+
+    // Setter pour un choix multiple - nouveau
+    public function setFamilleOlfactiveAttribute($values)
     {
         $attributes = $this->specific_attributes ?: [];
-        $attributes['genre'] = $value;
+        $attributes['famille_olfactive'] = is_array($values) ? $values : [$values];
         $this->specific_attributes = $attributes;
     }
 }

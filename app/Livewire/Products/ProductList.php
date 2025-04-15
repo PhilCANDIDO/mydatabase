@@ -19,6 +19,8 @@ class ProductList extends Component
     public $sortField = 'type'; // Tri par défaut sur le champ "Type"
     public $sortDirection = 'asc';
     public $filters = [];
+    public $product;
+    public $familleOlfactiveSelection = [];
 
     // Les champs à rechercher pour chaque famille (code)
     protected $searchableFields = [

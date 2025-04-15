@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->integer('order')->default(0);
             $table->boolean('active')->default(true);
+            $table->boolean('is_multiple')->default(false);
             $table->timestamps();
             
             // Index composé pour la recherche rapide
