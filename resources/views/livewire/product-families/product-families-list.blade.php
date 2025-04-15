@@ -1,4 +1,3 @@
-<!-- resources/views/livewire/product-families/product-families-list.blade.php -->
 <div>
     <!-- En-tête avec titre et bouton d'ajout -->
     <div class="flex justify-between items-center mb-4">
@@ -121,14 +120,14 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="{{ route('product-families.edit', $family) }}" 
-                               class="text-indigo-600 hover:text-indigo-900 mr-3">
+                            <a href="{{ route('product-families.edit', $family) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">
                                 {{ __('Éditer') }}
                             </a>
-                            <button wire:click="deleteConfirm({{ $family->id }})" 
-                                    class="text-red-600 hover:text-red-900">
-                                {{ __('Supprimer') }}
-                            </button>
+                            <form action="{{ route('product-families.destroy', $family) }}" method="POST" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette famille de produit ?')">Supprimer</button>
+                            </form>
                         </td>
                     </tr>
                 @empty
@@ -146,19 +145,4 @@
     <div class="mt-4">
         {{ $families->links() }}
     </div>
-
-    <!-- Script pour la confirmation de suppression -->
-    @push('scripts')
-    <script>
-        document.addEventListener('livewire:initialized', () => {
-            @this.on('showDeleteConfirmation', (event) => {
-                const familyId = event.familyId;
-                
-                if (confirm("{{ __('Êtes-vous sûr de vouloir supprimer cette famille de produits ?') }}")) {
-                    @this.deleteFamily(familyId);
-                }
-            });
-        });
-    </script>
-    @endpush
 </div>
