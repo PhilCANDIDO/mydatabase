@@ -47,7 +47,7 @@ class ProductFamiliesList extends Component
 
     public function deleteConfirm($familyId)
     {
-        $this->dispatch('showDeleteConfirmation', ['familyId' => $familyId]);
+        $this->dispatch('showDeleteConfirmation', familyId: $familyId);
     }
 
     public function deleteFamily($familyId)

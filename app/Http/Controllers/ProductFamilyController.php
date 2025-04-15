@@ -69,8 +69,12 @@ class ProductFamilyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(ProductFamily $family)
     {
-        //
+        $name = $family->name;
+        $family->delete();
+
+        return redirect()->route('product-families.index')
+            ->with('success', __("Famille de produits :name a été supprimée", ['name' => $name]));
     }
 }
