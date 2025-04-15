@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductFamilyController;
 
 Route::view('/', 'welcome');
 
@@ -34,6 +36,28 @@ Route::middleware(['auth', 'role:Super'])->group(function () {
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+});
+
+// Routes pour la gestion des produits
+Route::middleware(['auth'])->group(function () {
+    // Route d'accueil des produits (sans famille sélectionnée)
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    
+    // Routes pour une famille spécifique
+    Route::prefix('products/{familyCode}')->group(function () {
+        Route::get('/', [ProductController::class, 'index'])->name('products.family.index');
+        Route::get('/create', [ProductController::class, 'create'])->name('products.create')->middleware('permission:add data');
+        Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('products.edit')->middleware('permission:edit data');
+        Route::get('/import', [ProductController::class, 'showImport'])->name('products.import')->middleware('permission:import data');
+        Route::get('/export', [ProductController::class, 'showExport'])->name('products.export')->middleware('permission:export data');
+    });
+});
+
+// Routes pour la gestion des familles de produits
+Route::middleware(['auth', 'role:Superviser|Super'])->prefix('product-families')->group(function () {
+    Route::get('/', [ProductFamilyController::class, 'index'])->name('product-families.index');
+    Route::get('/{family}/edit', [ProductFamilyController::class, 'edit'])->name('product-families.edit');
+    Route::put('/{family}', [ProductFamilyController::class, 'update'])->name('product-families.update');
 });
 
 require __DIR__.'/auth.php';
