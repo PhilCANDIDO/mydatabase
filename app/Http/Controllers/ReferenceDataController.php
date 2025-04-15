@@ -47,6 +47,7 @@ class ReferenceDataController extends Controller
             'description' => 'nullable|string',
             'order' => 'integer|min:0',
             'active' => 'boolean',
+            'is_multiple' => 'boolean',
         ]);
         
         // Validation d'unicité de la paire type/value

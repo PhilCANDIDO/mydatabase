@@ -20,7 +20,7 @@ class AdminUserSeeder extends Seeder
             $admin = User::create([  // Assignez le résultat de create() à $admin
                 'name' => 'Admin',
                 'email' => 'admin@mydatabase.test',
-                'password' => Hash::make('azerty'),
+                'password' => Hash::make('azertyui'),
             ]);
             $this->command->info('Admin user created');
         } else {
