@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductFamilyController;
+use App\Http\Controllers\ReferenceDataController;
 
 Route::view('/', 'welcome');
 
@@ -58,6 +59,16 @@ Route::middleware(['auth', 'role:Superviser|Super'])->prefix('product-families')
     Route::get('/', [ProductFamilyController::class, 'index'])->name('product-families.index');
     Route::get('/{family}/edit', [ProductFamilyController::class, 'edit'])->name('product-families.edit');
     Route::put('/{family}', [ProductFamilyController::class, 'update'])->name('product-families.update');
+});
+
+// Routes pour la gestion du référentiel de données
+Route::middleware(['auth', 'role:Superviser|Super'])->prefix('reference-data')->group(function () {
+    Route::get('/', [ReferenceDataController::class, 'index'])->name('reference-data.index');
+    Route::get('/create', [ReferenceDataController::class, 'create'])->name('reference-data.create');
+    Route::post('/', [ReferenceDataController::class, 'store'])->name('reference-data.store');
+    Route::get('/{referenceData}/edit', [ReferenceDataController::class, 'edit'])->name('reference-data.edit');
+    Route::put('/{referenceData}', [ReferenceDataController::class, 'update'])->name('reference-data.update');
+    Route::delete('/{referenceData}', [ReferenceDataController::class, 'destroy'])->name('reference-data.destroy');
 });
 
 require __DIR__.'/auth.php';
