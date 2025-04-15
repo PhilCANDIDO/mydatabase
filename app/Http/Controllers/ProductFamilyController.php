@@ -8,14 +8,6 @@ use Illuminate\Support\Facades\Gate;
 
 class ProductFamilyController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     */
-    public function __construct()
-    {
-        // Vérifier pour toutes les méthodes que l'utilisateur a le rôle "Superviser"
-        $this->middleware(['role:Superviser|Super']);
-    }
 
     /**
      * Display a listing of product families.
