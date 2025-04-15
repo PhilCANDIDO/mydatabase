@@ -38,7 +38,7 @@ trait Auditable
             'before_data' => $before,
             'after_data' => $after,
             'ip_address' => request()->ip(),
-            'created_at' => now()
+            'created_at' => now(),
         ]);
     }
 }
