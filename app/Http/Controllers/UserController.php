@@ -103,13 +103,19 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if ($user->id === auth()->id) {
+        // Empêcher un utilisateur de se supprimer lui-même
+        if ($user->id === auth()->id()) {
             return redirect()->route('users.index')
-                ->with('error', __("You cannot delete your own account."));
+                ->with('error', __("Vous ne pouvez pas supprimer votre propre compte."));
         }
-        $user->delete();
 
-        return redirect()->route('users.index')
-            ->with('success', __("User deleted successfully."));
+        try {
+            $user->delete();
+            return redirect()->route('users.index')
+                ->with('success', __("L'utilisateur a été supprimé avec succès."));
+        } catch (\Exception $e) {
+            return redirect()->route('users.index')
+                ->with('error', __("Erreur lors de la suppression: ") . $e->getMessage());
+        }
     }
 }
