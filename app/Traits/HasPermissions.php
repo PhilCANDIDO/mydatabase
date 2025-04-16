@@ -4,29 +4,29 @@ namespace App\Traits;
 
 trait HasPermissions
 {
-    public function userCan($permission)
+    public function permUserCan($permission)
     {
         return auth()->user() && auth()->user()->can($permission);
     }
     
-    public function userHasRole($role)
+    public function permUserHasRole($role)
     {
         return auth()->user() && auth()->user()->hasRole($role);
     }
     
-    public function userHasAnyRole($roles)
+    public function permUserHasAnyRole($roles)
     {
         return auth()->user() && auth()->user()->hasAnyRole($roles);
     }
     
-    public function userHasAllRoles($roles)
+    public function permUserHasAllRoles($roles)
     {
         return auth()->user() && auth()->user()->hasAllRoles($roles);
     }
     
-    public function authorize($permission)
+    public function permAuthorize($permission)
     {
-        if (!$this->userCan($permission)) {
+        if (!$this->permUserCan($permission)) {
             abort(403, __('Unauthorized action.'));
         }
         
