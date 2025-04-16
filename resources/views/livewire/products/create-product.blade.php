@@ -10,6 +10,15 @@
             <div class="border-t border-gray-200 px-4 py-5 sm:p-6">
                 <!-- Champs communs à toutes les familles -->
                 <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <!-- Type (généré automatiquement, en lecture seule) -->
+                    <div class="sm:col-span-3">
+                        <label for="type" class="block text-sm font-medium text-gray-700">{{ __('Type') }}</label>
+                        <div class="mt-1">
+                            <input type="text" wire:model="product.type" id="type" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md bg-gray-100" readonly>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">{{ __('Identifiant unique généré automatiquement') }}</p>
+                    </div>
+                    
                     <div class="sm:col-span-3">
                         <label for="nom" class="block text-sm font-medium text-gray-700">{{ __('Nom') }} *</label>
                         <div class="mt-1">
@@ -28,17 +37,20 @@
                     
                     <!-- Champs spécifiques selon la famille -->
                     @if($family->code != 'W')
+                        <!-- Zone Géographique (multi-select) -->
                         <div class="sm:col-span-3">
                             <label for="zone_geographique" class="block text-sm font-medium text-gray-700">{{ __('Zone Géographique') }}</label>
-                            <div class="mt-1">
-                                <select wire:model="product.zone_geographique" id="zone_geographique" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                                    <option value="">{{ __('Sélectionner...') }}</option>
+                            <div class="mt-1" wire:ignore>
+                                <select id="zone_geographique" multiple
+                                    class="select-multiple-zones bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                    data-placeholder="{{ __('Sélectionner des zones...') }}">
                                     @foreach($referenceData['zone_geographique'] as $zone)
                                         <option value="{{ $zone->value }}">{{ $zone->label }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            @error('product.zone_geographique') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            <p class="mt-1 text-xs text-gray-500">{{ __('Vous pouvez sélectionner plusieurs zones') }}</p>
+                            @error('zoneGeoValues') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
                         
                         <div class="sm:col-span-3">
@@ -58,49 +70,79 @@
                         <div class="sm:col-span-3">
                             <label for="description_olfactive_tete_1" class="block text-sm font-medium text-gray-700">{{ __('Note de tête 1') }}</label>
                             <div class="mt-1">
-                                <input type="text" wire:model="product.description_olfactive_tete_1" id="description_olfactive_tete_1" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                <select wire:model="product.description_olfactive_tete_1" id="description_olfactive_tete_1" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                    <option value="">{{ __('Sélectionner...') }}</option>
+                                    @foreach($referenceData['description_olfactive'] as $desc)
+                                        <option value="{{ $desc->value }}">{{ $desc->label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             @error('product.description_olfactive_tete_1') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
-                        
+
                         <div class="sm:col-span-3">
                             <label for="description_olfactive_tete_2" class="block text-sm font-medium text-gray-700">{{ __('Note de tête 2') }}</label>
                             <div class="mt-1">
-                                <input type="text" wire:model="product.description_olfactive_tete_2" id="description_olfactive_tete_2" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                <select wire:model="product.description_olfactive_tete_2" id="description_olfactive_tete_2" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                    <option value="">{{ __('Sélectionner...') }}</option>
+                                    @foreach($referenceData['description_olfactive'] as $desc)
+                                        <option value="{{ $desc->value }}">{{ $desc->label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             @error('product.description_olfactive_tete_2') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
-                        
+
                         <!-- Notes de cœur -->
                         <div class="sm:col-span-3">
                             <label for="description_olfactive_coeur_1" class="block text-sm font-medium text-gray-700">{{ __('Note de cœur 1') }}</label>
                             <div class="mt-1">
-                                <input type="text" wire:model="product.description_olfactive_coeur_1" id="description_olfactive_coeur_1" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                <select wire:model="product.description_olfactive_coeur_1" id="description_olfactive_coeur_1" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                    <option value="">{{ __('Sélectionner...') }}</option>
+                                    @foreach($referenceData['description_olfactive'] as $desc)
+                                        <option value="{{ $desc->value }}">{{ $desc->label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             @error('product.description_olfactive_coeur_1') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
-                        
+
                         <div class="sm:col-span-3">
                             <label for="description_olfactive_coeur_2" class="block text-sm font-medium text-gray-700">{{ __('Note de cœur 2') }}</label>
                             <div class="mt-1">
-                                <input type="text" wire:model="product.description_olfactive_coeur_2" id="description_olfactive_coeur_2" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                <select wire:model="product.description_olfactive_coeur_2" id="description_olfactive_coeur_2" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                    <option value="">{{ __('Sélectionner...') }}</option>
+                                    @foreach($referenceData['description_olfactive'] as $desc)
+                                        <option value="{{ $desc->value }}">{{ $desc->label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             @error('product.description_olfactive_coeur_2') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
-                        
+
                         <!-- Notes de fond -->
                         <div class="sm:col-span-3">
                             <label for="description_olfactive_fond_1" class="block text-sm font-medium text-gray-700">{{ __('Note de fond 1') }}</label>
                             <div class="mt-1">
-                                <input type="text" wire:model="product.description_olfactive_fond_1" id="description_olfactive_fond_1" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                <select wire:model="product.description_olfactive_fond_1" id="description_olfactive_fond_1" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                    <option value="">{{ __('Sélectionner...') }}</option>
+                                    @foreach($referenceData['description_olfactive'] as $desc)
+                                        <option value="{{ $desc->value }}">{{ $desc->label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             @error('product.description_olfactive_fond_1') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
-                        
+
                         <div class="sm:col-span-3">
                             <label for="description_olfactive_fond_2" class="block text-sm font-medium text-gray-700">{{ __('Note de fond 2') }}</label>
                             <div class="mt-1">
-                                <input type="text" wire:model="product.description_olfactive_fond_2" id="description_olfactive_fond_2" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                <select wire:model="product.description_olfactive_fond_2" id="description_olfactive_fond_2" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                    <option value="">{{ __('Sélectionner...') }}</option>
+                                    @foreach($referenceData['description_olfactive'] as $desc)
+                                        <option value="{{ $desc->value }}">{{ $desc->label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             @error('product.description_olfactive_fond_2') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
@@ -182,3 +224,33 @@
         </div>
     </form>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('livewire:initialized', function() {
+        initMultiSelect();
+    });
+
+    function initMultiSelect() {
+        const zoneSelectElement = document.getElementById('zone_geographique');
+        if (zoneSelectElement) {
+            // Initialisation du select avec Flowbite
+            const multiSelect = new Flowbite.Select(zoneSelectElement, {
+                multiple: true,
+                placeholder: zoneSelectElement.dataset.placeholder
+            });
+
+            // Synchroniser avec Livewire lors des changements
+            zoneSelectElement.addEventListener('change', function() {
+                let selectedValues = Array.from(this.selectedOptions).map(option => option.value);
+                @this.set('zoneGeoValues', selectedValues);
+            });
+        }
+    }
+
+    // Re-initialiser le multi-select quand Livewire rafraîchit le DOM
+    document.addEventListener('livewire:navigated', function() {
+        initMultiSelect();
+    });
+</script>
+@endpush
