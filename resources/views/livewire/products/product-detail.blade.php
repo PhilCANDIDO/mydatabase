@@ -36,14 +36,20 @@
                 </div>
                 
                 @if($family->code != 'W')
+                    <!-- Zone Géographique -->
                     <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Zone Géographique') }}</dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ $product->zone_geographique }}</dd>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {{ $product->formatted_zone_geographique ?: __('Non spécifié') }}
+                        </dd>
                     </div>
-                    
+
+                    <!-- Famille Olfactive -->
                     <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Famille Olfactive') }}</dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ $product->famille_olfactive }}</dd>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {{ $product->formatted_famille_olfactive ?: __('Non spécifié') }}
+                        </dd>
                     </div>
                     
                     @if(in_array($family->code, ['D', 'M', 'U']))
@@ -54,33 +60,27 @@
                     @endif
                     
                     <!-- Notes olfactives -->
+                    <!-- Notes de tête -->
                     <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Notes de tête') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                            {{ $product->description_olfactive_tete_1 }}
-                            @if($product->description_olfactive_tete_2)
-                                , {{ $product->description_olfactive_tete_2 }}
-                            @endif
+                            {{ count($product->tete_notes) > 0 ? implode(', ', $product->tete_notes->toArray()) : __('Non spécifié') }}
                         </dd>
                     </div>
-                    
+
+                    <!-- Notes de cœur -->
                     <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Notes de cœur') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                            {{ $product->description_olfactive_coeur_1 }}
-                            @if($product->description_olfactive_coeur_2)
-                                , {{ $product->description_olfactive_coeur_2 }}
-                            @endif
+                            {{ count($product->coeur_notes) > 0 ? implode(', ', $product->coeur_notes->toArray()) : __('Non spécifié') }}
                         </dd>
                     </div>
-                    
+
+                    <!-- Notes de fond -->
                     <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Notes de fond') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                            {{ $product->description_olfactive_fond_1 }}
-                            @if($product->description_olfactive_fond_2)
-                                , {{ $product->description_olfactive_fond_2 }}
-                            @endif
+                            {{ count($product->fond_notes) > 0 ? implode(', ', $product->fond_notes->toArray()) : __('Non spécifié') }}
                         </dd>
                     </div>
                 @endif
@@ -104,11 +104,11 @@
                     </div>
                 @endif
                 
-                @if(in_array($family->code, ['D', 'M']) && isset($product->unisex))
+                @if(in_array($family->code, ['D', 'M']) && isset($product->formatted_unisex))
                     <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Unisex') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                            {{ $product->unisex ? __('Oui') : __('Non') }}
+                            {{ $product->formatted_unisex ? __('Oui') : __('Non') }}
                         </dd>
                     </div>
                 @endif
