@@ -16,6 +16,13 @@ class EditReferenceData extends Component
     public $order;
     public $active;
     public $is_multiple;
+    
+    // Liste des types autorisés
+    protected $allowedTypes = [
+        'application' => 'Application',
+        'famille_olfactive' => 'Famille olfactive',
+        'zone_geo' => 'Zone Géographique'
+    ];
 
     protected function rules()
     {
@@ -45,6 +52,12 @@ class EditReferenceData extends Component
     public function update()
     {
         $this->validate();
+        
+        // Vérification que le type est autorisé
+        if (!array_key_exists($this->type, $this->allowedTypes)) {
+            session()->flash('error', __('Ce type de référence n\'est pas autorisé.'));
+            return;
+        }
 
         // Vérification d'unicité de la paire type/value si modifiée
         if ($this->type !== $this->referenceData->type || $this->value !== $this->referenceData->value) {
@@ -75,13 +88,8 @@ class EditReferenceData extends Component
 
     public function render()
     {
-        $types = ReferenceData::select('type')
-            ->distinct()
-            ->orderBy('type')
-            ->pluck('type');
-            
         return view('livewire.reference-data.edit-reference-data', [
-            'types' => $types,
+            'allowedTypes' => $this->allowedTypes,
         ]);
     }
 }

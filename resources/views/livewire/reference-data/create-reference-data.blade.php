@@ -10,31 +10,16 @@
                     </div>
                 @endif
                 
-                <!-- Sélection du type -->
+                <!-- Type (limité aux types autorisés) -->
                 <div class="mb-4">
-                    <div class="flex items-center mb-2">
-                        <input wire:model="isNewType" wire:change="updatedIsNewType" type="checkbox" id="isNewType" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <label for="isNewType" class="ml-2 block text-sm text-gray-700">{{ __('Créer un nouveau type') }}</label>
-                    </div>
-                    
-                    @if($isNewType)
-                        <div>
-                            <label for="newType" class="block text-sm font-medium text-gray-700">{{ __('Nouveau Type') }}</label>
-                            <input wire:model="newType" type="text" id="newType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            @error('newType') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                        </div>
-                    @else
-                        <div>
-                            <label for="type" class="block text-sm font-medium text-gray-700">{{ __('Type') }}</label>
-                            <select wire:model="type" id="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="">{{ __('Sélectionner un type') }}</option>
-                                @foreach($types as $typeOption)
-                                    <option value="{{ $typeOption }}">{{ $typeOption }}</option>
-                                @endforeach
-                            </select>
-                            @error('type') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                        </div>
-                    @endif
+                    <label for="type" class="block text-sm font-medium text-gray-700">{{ __('Type') }}</label>
+                    <select wire:model="type" id="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">{{ __('Sélectionner un type') }}</option>
+                        @foreach($allowedTypes as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    @error('type') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
                 
                 <!-- Valeur -->
