@@ -19,6 +19,14 @@ class ProductController extends Controller
             abort(403, __('Unauthorized action.'));
         }
 
+        // Si aucun code de famille n'est fourni, rediriger vers la première famille active
+        if (!$familyCode) {
+            $defaultFamily = ProductFamily::where('active', true)->orderBy('name')->first();
+            if ($defaultFamily) {
+                return redirect()->route('products.family.index', $defaultFamily->code);
+            }
+        }
+
         // Si le code de famille est fourni, récupérer cette famille
         $family = null;
         if ($familyCode) {

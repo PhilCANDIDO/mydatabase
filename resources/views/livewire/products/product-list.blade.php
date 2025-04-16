@@ -107,9 +107,22 @@
                             @foreach($visibleColumns as $column)
                                 <td class="px-6 py-4 whitespace-nowrap text-sm {{ $column === 'type' ? 'font-medium text-gray-900' : 'text-gray-500' }}">
                                     @if(strpos($column, 'specific_attributes->') === 0)
-                                        {{ data_get($product->specific_attributes, str_replace('specific_attributes->', '', $column)) }}
+                                        @php
+                                            $attributeKey = str_replace('specific_attributes->', '', $column);
+                                            $value = data_get($product->specific_attributes, $attributeKey);
+                                        @endphp
+                                        
+                                        @if(is_array($value))
+                                            {{ implode(', ', $value) }}
+                                        @else
+                                            {{ $value ?? '' }}
+                                        @endif
                                     @else
-                                        {{ $product->{$column} }}
+                                        @if(is_array($product->{$column} ?? null))
+                                            {{ implode(', ', $product->{$column}) }}
+                                        @else
+                                            {{ $product->{$column} ?? '' }}
+                                        @endif
                                     @endif
                                 </td>
                             @endforeach
