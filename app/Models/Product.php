@@ -1,29 +1,24 @@
 <?php
 
 namespace App\Models;
+
 use App\Traits\Auditable;
+use App\Traits\FormatsAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes, Auditable;
+    use HasFactory, SoftDeletes, Auditable, FormatsAttributes;
 
     protected $fillable = [
         'type',
         'product_family_id',
         'nom',
         'marque',
-        'zone_geographique',
-        'description_olfactive_tete_1',
-        'description_olfactive_tete_2',
-        'description_olfactive_coeur_1',
-        'description_olfactive_coeur_2',
-        'description_olfactive_fond_1',
-        'description_olfactive_fond_2',
-        'famille_olfactive',
         'specific_attributes',
         'date_sortie',
         'unisex',
@@ -36,63 +31,184 @@ class Product extends Model
         'unisex' => 'boolean',
     ];
 
+    // Relations
+    
     public function productFamily(): BelongsTo
     {
         return $this->belongsTo(ProductFamily::class);
     }
 
-    // Générer automatiquement le type lors de la création
-    protected static function boot()
+    public function zoneGeos(): HasMany
     {
-        parent::boot();
-        
-        static::creating(function ($model) {
-            if (!$model->type) {
-                $family = ProductFamily::findOrFail($model->product_family_id);
-                $lastProduct = self::where('product_family_id', $model->product_family_id)
-                    ->orderBy('id', 'desc')
-                    ->first();
-                
-                $sequenceNumber = $lastProduct ? (int)substr($lastProduct->type, strlen($family->code)) + 1 : 1;
-                $model->type = $family->code . str_pad($sequenceNumber, 6, '0', STR_PAD_LEFT);
-            }
-        });
+        return $this->hasMany(ProductZoneGeo::class);
     }
 
-    // Scopes pour faciliter les requêtes
-    public function scopeFamily($query, $familyCode)
+    public function olfactiveFamilies(): HasMany
     {
-        return $query->whereHas('productFamily', function ($q) use ($familyCode) {
-            $q->where('code', $familyCode);
-        });
+        return $this->hasMany(ProductOlfactiveFamily::class);
+    }
+
+    public function olfactiveNotes(): HasMany
+    {
+        return $this->hasMany(ProductOlfactiveNote::class);
     }
     
-    // Pour les choix uniques (déjà existants, à utiliser comme modèle)
+    // Accesseurs groupés par position
+    
+    public function getNotesByPosition(string $position)
+    {
+        return $this->olfactiveNotes()
+                    ->where('position', $position)
+                    ->orderBy('order')
+                    ->get()
+                    ->map(function($note) {
+                        return $note->getFormattedLabel();
+                    });
+    }
+    
+    public function getTeteNotesAttribute()
+    {
+        return $this->getNotesByPosition('tete');
+    }
+    
+    public function getCoeurNotesAttribute()
+    {
+        return $this->getNotesByPosition('coeur');
+    }
+    
+    public function getFondNotesAttribute()
+    {
+        return $this->getNotesByPosition('fond');
+    }
+    
+    // Accesseurs de compatibilité pour l'API
+    
+    public function getZoneGeographiqueAttribute()
+    {
+        return $this->zoneGeos->pluck('zone_geo_value')->toArray();
+    }
+    
+    public function getFormattedZoneGeographiqueAttribute()
+    {
+        return $this->zoneGeos
+                    ->map(function($zone) { 
+                        return $zone->getFormattedLabel(); 
+                    })
+                    ->implode(', ');
+    }
+    
+    public function getFamilleOlfactiveAttribute()
+    {
+        return $this->olfactiveFamilies->pluck('famille_value')->toArray();
+    }
+    
+    public function getFormattedFamilleOlfactiveAttribute()
+    {
+        return $this->olfactiveFamilies
+                    ->map(function($famille) { 
+                        return $famille->getFormattedLabel(); 
+                    })
+                    ->implode(', ');
+    }
+    
+    // Accesseurs pour compatibilité avec le code existant
+    
+    public function getDescriptionOlfactiveTete1Attribute()
+    {
+        $note = $this->olfactiveNotes()
+                     ->where('position', 'tete')
+                     ->where('order', 1)
+                     ->first();
+                     
+        return $note ? $note->getFormattedLabel() : null;
+    }
+    
+    public function getDescriptionOlfactiveTete2Attribute()
+    {
+        $note = $this->olfactiveNotes()
+                     ->where('position', 'tete')
+                     ->where('order', 2)
+                     ->first();
+                     
+        return $note ? $note->getFormattedLabel() : null;
+    }
+    
+    public function getDescriptionOlfactiveCoeur1Attribute()
+    {
+        $note = $this->olfactiveNotes()
+                     ->where('position', 'coeur')
+                     ->where('order', 1)
+                     ->first();
+                     
+        return $note ? $note->getFormattedLabel() : null;
+    }
+    
+    public function getDescriptionOlfactiveCoeur2Attribute()
+    {
+        $note = $this->olfactiveNotes()
+                     ->where('position', 'coeur')
+                     ->where('order', 2)
+                     ->first();
+                     
+        return $note ? $note->getFormattedLabel() : null;
+    }
+    
+    public function getDescriptionOlfactiveFond1Attribute()
+    {
+        $note = $this->olfactiveNotes()
+                     ->where('position', 'fond')
+                     ->where('order', 1)
+                     ->first();
+                     
+        return $note ? $note->getFormattedLabel() : null;
+    }
+    
+    public function getDescriptionOlfactiveFond2Attribute()
+    {
+        $note = $this->olfactiveNotes()
+                     ->where('position', 'fond')
+                     ->where('order', 2)
+                     ->first();
+                     
+        return $note ? $note->getFormattedLabel() : null;
+    }
+    
+    // Méthodes d'accesseurs spécifiques aux familles
+    
     public function getApplicationAttribute()
     {
-        return $this->product_family_id === 2 ? // Assurez-vous que 2 est l'ID de PM
+        return $this->product_family_id === 2 ? // ID de la famille PM
             ($this->specific_attributes['application'] ?? null) : null;
     }
 
-    // Pour les choix multiples - nouveau
-    public function getFamilleOlfactiveAttribute()
-    {
-        return $this->specific_attributes['famille_olfactive'] ?? [];
-    }
-
-    // Setter pour un choix unique (déjà existant)
     public function setApplicationAttribute($value)
     {
         $attributes = $this->specific_attributes ?: [];
         $attributes['application'] = $value;
         $this->specific_attributes = $attributes;
     }
+    
+    public function getGenreAttribute()
+    {
+        return $this->product_family_id === 5 ? // ID de la famille U
+            ($this->specific_attributes['genre'] ?? null) : null;
+    }
 
-    // Setter pour un choix multiple - nouveau
-    public function setFamilleOlfactiveAttribute($values)
+    public function setGenreAttribute($value)
     {
         $attributes = $this->specific_attributes ?: [];
-        $attributes['famille_olfactive'] = is_array($values) ? $values : [$values];
+        $attributes['genre'] = $value;
         $this->specific_attributes = $attributes;
+    }
+    
+    // Méthodes utilitaires
+    
+    protected function getFormatableAttributes()
+    {
+        return [
+            'zone_geographique',
+            'famille_olfactive',
+            'unisex',
+        ];
     }
 }

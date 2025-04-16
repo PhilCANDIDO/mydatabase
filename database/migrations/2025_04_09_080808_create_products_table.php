@@ -15,16 +15,6 @@ return new class extends Migration
             $table->string('nom');
             $table->string('marque')->nullable();
             
-            // Champs communs aux familles PM, D, M, U
-            $table->string('zone_geographique')->nullable();
-            $table->string('description_olfactive_tete_1')->nullable();
-            $table->string('description_olfactive_tete_2')->nullable();
-            $table->string('description_olfactive_coeur_1')->nullable();
-            $table->string('description_olfactive_coeur_2')->nullable();
-            $table->string('description_olfactive_fond_1')->nullable();
-            $table->string('description_olfactive_fond_2')->nullable();
-            $table->string('famille_olfactive')->nullable();
-            
             // Champs spécifiques stockés dans une colonne JSON
             $table->json('specific_attributes')->nullable();
             
