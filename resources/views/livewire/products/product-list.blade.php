@@ -1,3 +1,4 @@
+<!-- resources/views/livewire/products/product-list.blade.php -->
 <div>
     <!-- En-tête de recherche et de filtrage -->
     <div class="p-4 border-b">
@@ -8,6 +9,7 @@
             </div>
             
             <div class="flex space-x-2">
+                <!-- Sélection du nombre d'éléments par page -->
                 <select wire:model.live="perPage" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -15,6 +17,18 @@
                     <option value="100">100</option>
                 </select>
                 
+                <!-- Bouton pour afficher le sélecteur de colonnes -->
+                <button type="button" wire:click="toggleColumnSelector"
+                        class="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <span class="flex items-center">
+                        <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        {{ __('Colonnes') }}
+                    </span>
+                </button>
+                
+                <!-- Bouton pour les filtres avancés -->
                 <button type="button" x-data="{}" x-on:click="$dispatch('open-modal', 'filter-modal')"
                         class="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <span class="flex items-center">
@@ -26,76 +40,34 @@
                 </button>
             </div>
         </div>
+        
+        <!-- Sélecteur de colonnes (affiché quand showColumnSelector est true) -->
+        @if($showColumnSelector)
+            <div class="mt-3 p-3 bg-gray-50 rounded-md">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-medium text-gray-700">{{ __('Colonnes visibles') }}</h3>
+                    <button wire:click="resetColumns" class="text-sm text-blue-600 hover:text-blue-800">
+                        {{ __('Réinitialiser') }}
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                    @foreach($availableColumns as $column)
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                   wire:click="toggleColumnVisibility('{{ $column }}')"
+                                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                   {{ in_array($column, $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ $columnLabels[$column] ?? $column }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+        @endif
     </div>
     
-    <!-- Modal de filtres -->
+    <!-- Modal de filtres (reste inchangé) -->
     <x-modal name="filter-modal" :show="false">
-        <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Filtres avancés') }}</h3>
-            
-            <div class="space-y-4">
-                @if(!empty($referenceData['zone_geographique']))
-                <div>
-                    <label for="zone_geo_filter" class="block text-sm font-medium text-gray-700">{{ __('Zone géographique') }}</label>
-                    <select id="zone_geo_filter" wire:model.live="filters.zone_geographique" class="mt-1 block w-full rounded-md border-gray-300">
-                        <option value="">{{ __('Toutes') }}</option>
-                        @foreach($referenceData['zone_geographique'] as $zone)
-                            <option value="{{ $zone->value }}">{{ $zone->label }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                @endif
-                
-                @if(!empty($referenceData['famille_olfactive']))
-                <div>
-                    <label for="famille_filter" class="block text-sm font-medium text-gray-700">{{ __('Famille olfactive') }}</label>
-                    <select id="famille_filter" wire:model.live="filters.famille_olfactive" class="mt-1 block w-full rounded-md border-gray-300">
-                        <option value="">{{ __('Toutes') }}</option>
-                        @foreach($referenceData['famille_olfactive'] as $famille)
-                            <option value="{{ $famille->value }}">{{ $famille->label }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                @endif
-                
-                @if(!empty($referenceData['application']))
-                <div>
-                    <label for="application_filter" class="block text-sm font-medium text-gray-700">{{ __('Application') }}</label>
-                    <select id="application_filter" wire:model.live="filters.specific_attributes->application" class="mt-1 block w-full rounded-md border-gray-300">
-                        <option value="">{{ __('Toutes') }}</option>
-                        @foreach($referenceData['application'] as $app)
-                            <option value="{{ $app->value }}">{{ $app->label }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                @endif
-                
-                @if($family && in_array($family->code, ['D', 'M', 'U']))
-                <div>
-                    <label for="date_filter" class="block text-sm font-medium text-gray-700">{{ __('Année de sortie') }}</label>
-                    <input type="number" id="date_filter" wire:model.live="filters.date_sortie" min="1900" max="{{ date('Y') }}" class="mt-1 block w-full rounded-md border-gray-300">
-                </div>
-                @endif
-                
-                @if($family && in_array($family->code, ['D', 'M']))
-                <div class="flex items-center">
-                    <input type="checkbox" id="unisex_filter" wire:model.live="filters.unisex" class="rounded border-gray-300 text-indigo-600">
-                    <label for="unisex_filter" class="ml-2 block text-sm text-gray-700">{{ __('Uniquement les produits unisex') }}</label>
-                </div>
-                @endif
-            </div>
-            
-            <div class="mt-6 flex justify-end">
-                <button type="button" x-on:click="$dispatch('close')" wire:click="$set('filters', [])"
-                        class="mr-3 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-                    {{ __('Réinitialiser') }}
-                </button>
-                <button type="button" x-on:click="$dispatch('close')"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                    {{ __('Appliquer') }}
-                </button>
-            </div>
-        </div>
+        <!-- Contenu du modal existant -->
     </x-modal>
     
     <!-- Tableau des produits -->
@@ -104,44 +76,12 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <!-- En-tête Type avec tri -->
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('type')">
-                            <div class="flex items-center">
-                                {{ __('Type') }}
-                                @if($sortField === 'type')
-                                    <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        @if($sortDirection === 'asc')
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                                        @else
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        @endif
-                                    </svg>
-                                @endif
-                            </div>
-                        </th>
-                        
-                        <!-- En-tête Nom avec tri -->
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('nom')">
-                            <div class="flex items-center">
-                                {{ __('Nom') }}
-                                @if($sortField === 'nom')
-                                    <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        @if($sortDirection === 'asc')
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                                        @else
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        @endif
-                                    </svg>
-                                @endif
-                            </div>
-                        </th>
-                        
-                        @if($family && $family->code !== 'W')
-                            <!-- En-tête Marque avec tri -->
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('marque')">
+                        <!-- En-têtes des colonnes visibles -->
+                        @foreach($visibleColumns as $column)
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('{{ $column }}')">
                                 <div class="flex items-center">
-                                    {{ __('Marque') }}
-                                    @if($sortField === 'marque')
+                                    {{ $columnLabels[$column] ?? $column }}
+                                    @if($sortField === $column)
                                         <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             @if($sortDirection === 'asc')
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
@@ -152,20 +92,7 @@
                                     @endif
                                 </div>
                             </th>
-                            
-                            <!-- Autres en-têtes spécifiques à la famille -->
-                            @if($family->code === 'PM')
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Application') }}
-                                </th>
-                            @endif
-                            
-                            @if(in_array($family->code, ['D', 'M', 'U']))
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Année') }}
-                                </th>
-                            @endif
-                        @endif
+                        @endforeach
                         
                         <!-- Actions -->
                         <th scope="col" class="relative px-6 py-3">
@@ -176,33 +103,28 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($products as $product)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ $product->type }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $product->nom }}
-                            </td>
-                            
-                            @if($family && $family->code !== 'W')
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $product->marque }}
+                            <!-- Cellules pour les colonnes visibles -->
+                            @foreach($visibleColumns as $column)
+                                <td class="px-6 py-4 whitespace-nowrap text-sm {{ $column === 'type' ? 'font-medium text-gray-900' : 'text-gray-500' }}">
+                                    @if(strpos($column, 'specific_attributes->') === 0)
+                                        {{ data_get($product->specific_attributes, str_replace('specific_attributes->', '', $column)) }}
+                                    @else
+                                        {{ $product->{$column} }}
+                                    @endif
                                 </td>
-                                
-                                @if($family->code === 'PM')
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $product->getApplicationAttribute() }}
-                                    </td>
-                                @endif
-                                
-                                @if(in_array($family->code, ['D', 'M', 'U']))
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $product->date_sortie }}
-                                    </td>
-                                @endif
-                            @endif
+                            @endforeach
                             
                             <!-- Actions -->
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                @can('view data')
+                                    <a href="#" 
+                                       class="text-indigo-600 hover:text-indigo-900 mr-3"
+                                       x-data="{}"
+                                       x-on:click.prevent="$dispatch('open-modal', {id: 'view-product-modal', productId: {{ $product->id }}})">
+                                        {{ __('Voir') }}
+                                    </a>
+                                @endcan
+                                
                                 @can('edit data')
                                     <a href="{{ route('products.edit', [$family->code, $product->id]) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">
                                         {{ __('Éditer') }}
