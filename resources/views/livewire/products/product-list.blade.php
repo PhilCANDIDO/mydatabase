@@ -130,22 +130,21 @@
                             <!-- Actions -->
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 @can('view data')
-                                    <a href="#" 
-                                       class="text-indigo-600 hover:text-indigo-900 mr-3"
-                                       x-data="{}"
-                                       x-on:click.prevent="$dispatch('open-modal', {id: 'view-product-modal', productId: {{ $product->id }}})">
+                                    <a href="{{ route('products.show', [$family->code, $product->id]) }}" 
+                                       class="text-indigo-600 hover:text-indigo-900 mr-3">
                                         {{ __('Voir') }}
                                     </a>
                                 @endcan
                                 
                                 @can('edit data')
-                                    <a href="{{ route('products.edit', [$family->code, $product->id]) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                    <a href="{{ route('products.edit', [$family->code, $product->id]) }}" 
+                                       class="text-indigo-600 hover:text-indigo-900 mr-3">
                                         {{ __('Éditer') }}
                                     </a>
                                 @endcan
                                 
                                 @can('delete data')
-                                    <button wire:click="$dispatch('openModal', {component: 'products.delete-product-modal', arguments: {productId: {{ $product->id }}, productName: '{{ $product->nom }}'}})" 
+                                    <button wire:click="confirmDelete({{ $product->id }}, '{{ $product->nom }}')" 
                                             class="text-red-600 hover:text-red-900">
                                         {{ __('Supprimer') }}
                                     </button>

@@ -62,12 +62,21 @@ class ProductController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Request $request, $familyCode, Product $product)
     {
-        //
+        // Vérifie si l'utilisateur a la permission de voir les données
+        if (!Auth::user()->can('view data')) {
+            abort(403, __('Unauthorized action.'));
+        }
+
+        $family = ProductFamily::where('code', $familyCode)->firstOrFail();
+        
+        // Vérifier que le produit appartient bien à la famille demandée
+        if ($product->product_family_id !== $family->id) {
+            abort(404);
+        }
+        
+        return view('products.show', compact('family', 'product'));
     }
 
     /**
@@ -101,9 +110,19 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Product $product)
     {
-        //
+        // Vérification des permissions
+        if (!Auth::user()->can('delete data')) {
+            return redirect()->back()->with('error', __('Unauthorized action.'));
+        }
+        
+        try {
+            $product->delete();
+            return redirect()->back()->with('success', __('Produit supprimé avec succès.'));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', __('Erreur lors de la suppression du produit.'));
+        }
     }
 
      /**
