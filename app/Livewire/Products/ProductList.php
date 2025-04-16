@@ -247,4 +247,26 @@ class ProductList extends Component
             'columnLabels' => $this->columnLabels,
         ]);
     }
+
+    public function viewProduct($productId)
+    {
+        $this->dispatch('openModal', [
+            'component' => 'products.product-detail-modal',
+            'arguments' => [
+                'productId' => $productId
+            ]
+        ]);
+    }
+
+    public function confirmDelete($productId, $productName)
+    {
+        $this->dispatch('openModal', [
+            'component' => 'products.delete-product-modal',
+            'arguments' => [
+                'productId' => $productId,
+                'productName' => $productName
+            ]
+        ]);
+    }
+
 }

@@ -19,15 +19,20 @@ class DeleteProductModal extends ModalComponent
 
     public function delete()
     {
+        // Vérification des permissions
+        if (!auth()->user()->can('delete data')) {
+            session()->flash('error', __('Vous n\'avez pas les permissions nécessaires pour supprimer ce produit.'));
+            $this->closeModal();
+            return;
+        }
+        
         $product = Product::find($this->productId);
         
         if ($product) {
             $product->delete();
+            session()->flash('success', __('Le produit a été supprimé avec succès.'));
             $this->dispatch('refreshProducts');
             $this->closeModal();
-            
-            // Afficher un message de succès
-            session()->flash('success', __("Produit supprimé avec succès."));
         }
     }
 
