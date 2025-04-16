@@ -8,7 +8,6 @@ use Livewire\Component;
 class CreateReferenceData extends Component
 {
     public $type = '';
-    public $newType = '';
     public $value = '';
     public $label = '';
     public $description = '';
@@ -16,7 +15,12 @@ class CreateReferenceData extends Component
     public $active = true;
     public $is_multiple = false;
 
-    public $isNewType = false;
+    // Liste des types autorisés
+    protected $allowedTypes = [
+        'application' => 'Application',
+        'famille_olfactive' => 'Famille olfactive',
+        'zone_geo' => 'Zone Géographique'
+    ];
 
     protected $rules = [
         'type' => 'required|string|max:50',
@@ -28,31 +32,14 @@ class CreateReferenceData extends Component
         'is_multiple' => 'boolean',
     ];
 
-    public function updatedIsNewType()
-    {
-        if ($this->isNewType) {
-            $this->type = '';
-        } else {
-            $this->newType = '';
-        }
-    }
-
     public function create()
     {
-        // Si c'est un nouveau type, utiliser newType
-        if ($this->isNewType) {
-            $this->type = $this->newType;
-            $this->validate([
-                'newType' => 'required|string|max:50',
-                'value' => 'required|string|max:100',
-                'label' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'order' => 'nullable|integer|min:0',
-                'active' => 'boolean',
-                'is_multiple' => 'boolean',
-            ]);
-        } else {
-            $this->validate();
+        $this->validate();
+
+        // Vérification que le type est autorisé
+        if (!array_key_exists($this->type, $this->allowedTypes)) {
+            session()->flash('error', __('Ce type de référence n\'est pas autorisé.'));
+            return;
         }
 
         // Vérification d'unicité de la paire type/value
@@ -81,10 +68,8 @@ class CreateReferenceData extends Component
 
     public function render()
     {
-        $types = ReferenceData::select('type')->distinct()->orderBy('type')->pluck('type');
-        
         return view('livewire.reference-data.create-reference-data', [
-            'types' => $types,
+            'allowedTypes' => $this->allowedTypes,
         ]);
     }
 }

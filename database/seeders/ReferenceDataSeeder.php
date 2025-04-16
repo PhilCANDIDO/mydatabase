@@ -62,5 +62,43 @@ class ReferenceDataSeeder extends Seeder
                 ]
             );
         }
+
+        // Zones géographiques (choix multiple)
+        $zonesGeographiques = [
+            'europe' => 'Europe',
+            'amerique_nord' => 'Amérique du Nord',
+            'amerique_sud' => 'Amérique du Sud',
+            'asie_pacifique' => 'Asie-Pacifique',
+            'moyen_orient' => 'Moyen-Orient',
+            'afrique' => 'Afrique',
+            'monde' => 'Monde entier',
+            'france' => 'France',
+            'allemagne' => 'Allemagne',
+            'royaume_uni' => 'Royaume-Uni',
+            'italie' => 'Italie',
+            'espagne' => 'Espagne',
+            'usa' => 'États-Unis',
+            'chine' => 'Chine',
+            'japon' => 'Japon',
+            'coree_sud' => 'Corée du Sud',
+            'inde' => 'Inde',
+            'emirats_arabes_unis' => 'Émirats Arabes Unis',
+            'arabie_saoudite' => 'Arabie Saoudite',
+            'bresil' => 'Brésil',
+            'russie' => 'Russie',
+        ];
+
+        $order = 1;
+        foreach ($zonesGeographiques as $value => $label) {
+            ReferenceData::firstOrCreate(
+                ['type' => 'zone_geo', 'value' => $value],
+                [
+                    'label' => $label,
+                    'order' => $order++,
+                    'active' => true,
+                    'is_multiple' => true,
+                ]
+            );
+        }
     }
 }

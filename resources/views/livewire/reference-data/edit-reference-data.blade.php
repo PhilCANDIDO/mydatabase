@@ -14,8 +14,8 @@
                 <div class="mb-4">
                     <label for="type" class="block text-sm font-medium text-gray-700">{{ __('Type') }}</label>
                     <select wire:model="type" id="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        @foreach($types as $typeOption)
-                            <option value="{{ $typeOption }}">{{ $typeOption }}</option>
+                        @foreach($allowedTypes as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
                         @endforeach
                     </select>
                     @error('type') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
