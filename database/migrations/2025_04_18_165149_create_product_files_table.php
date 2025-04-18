@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Table pour les familles olfactives
-        Schema::create('product_olfactive_families', function (Blueprint $table) {
+        Schema::create('product_files', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->string('famille_value');
             $table->timestamps();
-            
-            $table->unique(['product_id', 'famille_value']);
         });
     }
 
@@ -27,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_olfactive_families');
+        Schema::dropIfExists('product_files');
     }
 };
