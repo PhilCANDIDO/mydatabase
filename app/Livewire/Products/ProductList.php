@@ -112,7 +112,7 @@ class ProductList extends Component
 
     protected function initializeColumnLabels()
     {
-        // Code existant inchangé
+        // Colonnes par défaut
         $this->columnLabels = [
             'type' => __('Type'),
             'nom' => __('Nom'),
@@ -123,12 +123,13 @@ class ProductList extends Component
             'specific_attributes->application' => __('Application'),
             'specific_attributes->genre' => __('Genre'),
             'unisex' => __('Unisex'),
-            'description_olfactive_tete_1' => __('Note de tête 1'),
-            'description_olfactive_tete_2' => __('Note de tête 2'),
-            'description_olfactive_coeur_1' => __('Note de cœur 1'),
-            'description_olfactive_coeur_2' => __('Note de cœur 2'),
-            'description_olfactive_fond_1' => __('Note de fond 1'),
-            'description_olfactive_fond_2' => __('Note de fond 2'),
+            'avatar' => __('Avatar'),
+            'notes_tete_1' => __('Note de tête 1'),
+            'notes_tete_2' => __('Note de tête 2'),
+            'notes_coeur_1' => __('Note de cœur 1'),
+            'notes_coeur_2' => __('Note de cœur 2'),
+            'notes_fond_1' => __('Note de fond 1'),
+            'notes_fond_2' => __('Note de fond 2'),
         ];
     }
 
@@ -140,14 +141,14 @@ class ProductList extends Component
             $this->visibleColumns = ['type', 'nom', 'marque'];
             return;
         }
-
+    
         // Déterminer les colonnes communes pour toutes les familles sélectionnées
         $familyCodes = ProductFamily::whereIn('id', $this->selectedFamilies)
                                    ->pluck('code')
                                    ->toArray();
         
         // Colonnes communes à toutes les familles
-        $commonColumns = ['type', 'nom', 'marque'];
+        $commonColumns = ['type', 'nom', 'marque', 'avatar'];
         
         // Colonnes spécifiques à analyser
         $potentialColumns = [
@@ -155,9 +156,17 @@ class ProductList extends Component
             'unisex', 'specific_attributes->application', 'specific_attributes->genre'
         ];
         
+        // Colonnes de notes olfactives (disponibles pour toutes les familles sauf W)
+        $noteColumns = [
+            'notes_tete_1', 'notes_tete_2', 
+            'notes_coeur_1', 'notes_coeur_2', 
+            'notes_fond_1', 'notes_fond_2'
+        ];
+        
         // Déterminer les colonnes disponibles en fonction des familles sélectionnées
         $availableColumns = $commonColumns;
         
+        // Ajouter les colonnes conditionnelles standards
         foreach ($potentialColumns as $column) {
             $applicable = true;
             
@@ -188,6 +197,19 @@ class ProductList extends Component
             }
         }
         
+        // Ajouter les colonnes de notes olfactives si au moins une famille autre que W est sélectionnée
+        $hasNonWFamily = false;
+        foreach ($familyCodes as $code) {
+            if ($code !== 'W') {
+                $hasNonWFamily = true;
+                break;
+            }
+        }
+        
+        if ($hasNonWFamily) {
+            $availableColumns = array_merge($availableColumns, $noteColumns);
+        }
+        
         $this->availableColumns = $availableColumns;
         
         // Charger les colonnes visibles depuis les préférences utilisateur
@@ -199,22 +221,34 @@ class ProductList extends Component
             if ($savedColumns) {
                 $this->visibleColumns = array_intersect($savedColumns, $this->availableColumns);
             } else {
-                // Utiliser les colonnes par défaut ou les colonnes communes
-                $this->visibleColumns = $commonColumns;
+                // Utiliser les colonnes par défaut
+                $this->visibleColumns = ['type', 'nom', 'marque'];
                 
                 // Ajouter quelques colonnes supplémentaires pertinentes si disponibles
-                foreach (['zone_geographique', 'famille_olfactive'] as $col) {
+                $defaultExtraColumns = ['specific_attributes->application', 'date_sortie', 'zone_geographique', 'famille_olfactive'];
+                foreach ($defaultExtraColumns as $col) {
                     if (in_array($col, $this->availableColumns)) {
                         $this->visibleColumns[] = $col;
                     }
                 }
             }
         } else {
-            $this->visibleColumns = $commonColumns;
+            $this->visibleColumns = ['type', 'nom', 'marque'];
+            
+            // Ajouter d'autres colonnes par défaut même pour utilisateurs non connectés
+            if (in_array('specific_attributes->application', $this->availableColumns)) {
+                $this->visibleColumns[] = 'specific_attributes->application';
+            }
+            if (in_array('date_sortie', $this->availableColumns)) {
+                $this->visibleColumns[] = 'date_sortie';
+            }
+        }
+        
+        // Vérifier si les visibleColumns sont vides (cas rare mais possible)
+        if (empty($this->visibleColumns)) {
+            $this->visibleColumns = array_slice($this->availableColumns, 0, 3);
         }
     }
-
-    // Le reste du composant reste similaire, mais avec des adaptations pour gérer les produits de plusieurs familles
 
     public function render()
     {
@@ -228,7 +262,8 @@ class ProductList extends Component
 
         // Construire la requête de base pour les produits des familles sélectionnées
         $query = Product::query()
-            ->whereIn('product_family_id', $this->selectedFamilies);
+            ->whereIn('product_family_id', $this->selectedFamilies)
+            ->with(['zoneGeos', 'olfactiveFamilies', 'olfactiveNotes']);
 
         // Appliquer la recherche si elle est définie
         if (!empty($this->search)) {
@@ -335,8 +370,9 @@ class ProductList extends Component
     {
         $this->visibleColumns = ['type', 'nom', 'marque'];
         
-        // Ajouter d'autres colonnes pertinentes si disponibles
-        foreach (['zone_geographique', 'famille_olfactive'] as $col) {
+        // Ajouter quelques colonnes supplémentaires par défaut si disponibles
+        $defaultExtraColumns = ['specific_attributes->application', 'date_sortie', 'zone_geographique', 'famille_olfactive'];
+        foreach ($defaultExtraColumns as $col) {
             if (in_array($col, $this->availableColumns)) {
                 $this->visibleColumns[] = $col;
             }
@@ -351,5 +387,4 @@ class ProductList extends Component
             Auth::user()->setPreference($preferencesKey, $this->visibleColumns);
         }
     }
-
 }

@@ -174,12 +174,6 @@ class Product extends Model
     }
     
     // Méthodes d'accesseurs spécifiques aux familles
-    
-    public function getApplicationAttribute()
-    {
-        return $this->product_family_id === 2 ? // ID de la famille PM
-            ($this->specific_attributes['application'] ?? null) : null;
-    }
 
     public function setApplicationAttribute($value)
     {
@@ -210,5 +204,27 @@ class Product extends Model
             'famille_olfactive',
             'unisex',
         ];
+    }
+
+    public function applications(): HasMany
+    {
+        return $this->hasMany(ProductApplication::class);
+    }
+
+    public function files(): HasMany
+    {
+        return $this->hasMany(ProductFile::class);
+    }
+
+    public function getApplicationAttribute()
+    {
+        $app = $this->applications->first();
+        return $app ? $app->application_value : null;
+    }
+
+    public function getFormattedApplicationAttribute()
+    {
+        $app = $this->applications->first();
+        return $app ? $app->getFormattedLabel() : null;
     }
 }

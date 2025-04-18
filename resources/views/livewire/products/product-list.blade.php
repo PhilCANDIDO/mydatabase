@@ -130,118 +130,283 @@
                 
                 <!-- Sélecteur de colonnes -->
                 @if($showColumnSelector)
-                    <div class="mt-3 p-3 bg-gray-50 rounded-md">
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="font-medium text-gray-700">{{ __('Colonnes visibles') }}</h3>
-                            <button wire:click="resetColumns" class="text-sm text-blue-600 hover:text-blue-800">
-                                {{ __('Réinitialiser') }}
-                            </button>
-                        </div>
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                            @foreach($availableColumns as $column)
-                                <label class="inline-flex items-center">
-                                    <input type="checkbox" 
-                                           wire:click="toggleColumnVisibility('{{ $column }}')"
-                                           class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                           {{ in_array($column, $visibleColumns) ? 'checked' : '' }}>
-                                    <span class="ml-2 text-sm text-gray-700">{{ $columnLabels[$column] ?? $column }}</span>
-                                </label>
-                            @endforeach
-                        </div>
+                <div class="mt-3 p-3 bg-gray-50 rounded-md">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-medium text-gray-700">{{ __('Colonnes visibles') }}</h3>
+                        <button wire:click="resetColumns" class="text-sm text-blue-600 hover:text-blue-800">
+                            {{ __('Réinitialiser') }}
+                        </button>
                     </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                        <!-- Colonnes de base -->
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('type')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('type', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Type') }}</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('nom')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('nom', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Nom') }}</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('marque')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('marque', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Marque') }}</span>
+                        </label>
+                        
+                        <!-- Colonnes produits spécifiques -->
+                        @if(in_array('specific_attributes->application', $availableColumns))
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('specific_attributes->application')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('specific_attributes->application', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Application') }}</span>
+                        </label>
+                        @endif
+                        
+                        @if(in_array('date_sortie', $availableColumns))
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('date_sortie')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('date_sortie', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Année') }}</span>
+                        </label>
+                        @endif
+                        
+                        @if(in_array('zone_geographique', $availableColumns))
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('zone_geographique')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('zone_geographique', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Zone Géographique') }}</span>
+                        </label>
+                        @endif
+                        
+                        @if(in_array('famille_olfactive', $availableColumns))
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('famille_olfactive')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('famille_olfactive', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Famille Olfactive') }}</span>
+                        </label>
+                        @endif
+                        
+                        <!-- Notes olfactives -->
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('notes_tete_1')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('notes_tete_1', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Note de tête 1') }}</span>
+                        </label>
+                        
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('notes_tete_2')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('notes_tete_2', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Note de tête 2') }}</span>
+                        </label>
+                        
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('notes_coeur_1')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('notes_coeur_1', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Note de cœur 1') }}</span>
+                        </label>
+                        
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('notes_coeur_2')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('notes_coeur_2', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Note de cœur 2') }}</span>
+                        </label>
+                        
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('notes_fond_1')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('notes_fond_1', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Note de fond 1') }}</span>
+                        </label>
+                        
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('notes_fond_2')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('notes_fond_2', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Note de fond 2') }}</span>
+                        </label>
+                        
+                        @if(in_array('unisex', $availableColumns))
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('unisex')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('unisex', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Unisex') }}</span>
+                        </label>
+                        @endif
+                        
+                        @if(in_array('specific_attributes->genre', $availableColumns))
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('specific_attributes->genre')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('specific_attributes->genre', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Genre') }}</span>
+                        </label>
+                        @endif
+                        
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" 
+                                wire:click="toggleColumnVisibility('avatar')"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                {{ in_array('avatar', $visibleColumns) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-700">{{ __('Avatar') }}</span>
+                        </label>
+                    </div>
+                </div>
                 @endif
             </div>
             
             <!-- Tableau des produits -->
             @if($products && $products->count() > 0)
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <!-- En-têtes des colonnes visibles -->
+                            @foreach($visibleColumns as $column)
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('{{ $column }}')">
+                                    <div class="flex items-center">
+                                        {{ $columnLabels[$column] ?? $column }}
+                                        @if($sortField === $column)
+                                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                @if($sortDirection === 'asc')
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                @else
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                @endif
+                                            </svg>
+                                        @endif
+                                    </div>
+                                </th>
+                            @endforeach
+                            
+                            <!-- Actions -->
+                            <th scope="col" class="relative px-6 py-3">
+                                <span class="sr-only">{{ __('Actions') }}</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($products as $product)
                             <tr>
-                                <!-- En-têtes des colonnes visibles -->
+                                <!-- Cellules pour les colonnes visibles -->
                                 @foreach($visibleColumns as $column)
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click="sortBy('{{ $column }}')">
-                                        <div class="flex items-center">
-                                            {{ $columnLabels[$column] ?? $column }}
-                                            @if($sortField === $column)
-                                                <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    @if($sortDirection === 'asc')
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                                                    @else
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                                    @endif
-                                                </svg>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm {{ $column === 'type' ? 'font-medium text-gray-900' : 'text-gray-500' }}">
+                                        @if($column === 'avatar' && $product->avatar)
+                                            <img src="{{ Storage::url($product->avatar) }}" alt="{{ $product->nom }}" class="h-10 w-10 rounded-full object-cover">
+                                        @elseif($column === 'unisex')
+                                            {!! $product->unisex ? '<span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Oui</span>' : '<span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">Non</span>' !!}
+                                        @elseif(strpos($column, 'notes_tete_') === 0)
+                                            @php 
+                                                $position = 'tete';
+                                                $order = substr($column, strlen('notes_tete_'));
+                                                $note = $product->olfactiveNotes()
+                                                        ->where('position', $position)
+                                                        ->where('order', $order)
+                                                        ->first();
+                                            @endphp
+                                            {{ $note ? $note->getFormattedLabel() : '' }}
+                                        @elseif(strpos($column, 'notes_coeur_') === 0)
+                                            @php 
+                                                $position = 'coeur';
+                                                $order = substr($column, strlen('notes_coeur_'));
+                                                $note = $product->olfactiveNotes()
+                                                        ->where('position', $position)
+                                                        ->where('order', $order)
+                                                        ->first();
+                                            @endphp
+                                            {{ $note ? $note->getFormattedLabel() : '' }}
+                                        @elseif(strpos($column, 'notes_fond_') === 0)
+                                            @php 
+                                                $position = 'fond';
+                                                $order = substr($column, strlen('notes_fond_'));
+                                                $note = $product->olfactiveNotes()
+                                                        ->where('position', $position)
+                                                        ->where('order', $order)
+                                                        ->first();
+                                            @endphp
+                                            {{ $note ? $note->getFormattedLabel() : '' }}
+                                        @elseif(strpos($column, 'specific_attributes->') === 0)
+                                            @php
+                                                $attributeKey = str_replace('specific_attributes->', '', $column);
+                                                $value = data_get($product->specific_attributes, $attributeKey);
+                                            @endphp
+                                            
+                                            @if(is_array($value))
+                                                {{ implode(', ', $value) }}
+                                            @else
+                                                {{ $value ?? '' }}
                                             @endif
-                                        </div>
-                                    </th>
+                                        @else
+                                            @if(is_array($product->{$column} ?? null))
+                                                {{ implode(', ', $product->{$column}) }}
+                                            @else
+                                                {{ $product->{$column} ?? '' }}
+                                            @endif
+                                        @endif
+                                    </td>
                                 @endforeach
                                 
                                 <!-- Actions -->
-                                <th scope="col" class="relative px-6 py-3">
-                                    <span class="sr-only">{{ __('Actions') }}</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($products as $product)
-                                <tr>
-                                    <!-- Cellules pour les colonnes visibles -->
-                                    @foreach($visibleColumns as $column)
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm {{ $column === 'type' ? 'font-medium text-gray-900' : 'text-gray-500' }}">
-                                            @if(strpos($column, 'specific_attributes->') === 0)
-                                                @php
-                                                    $attributeKey = str_replace('specific_attributes->', '', $column);
-                                                    $value = data_get($product->specific_attributes, $attributeKey);
-                                                @endphp
-                                                
-                                                @if(is_array($value))
-                                                    {{ implode(', ', $value) }}
-                                                @else
-                                                    {{ $value ?? '' }}
-                                                @endif
-                                            @else
-                                                @if(is_array($product->{$column} ?? null))
-                                                    {{ implode(', ', $product->{$column}) }}
-                                                @else
-                                                    {{ $product->{$column} ?? '' }}
-                                                @endif
-                                            @endif
-                                        </td>
-                                    @endforeach
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    @php
+                                        $productFamily = $allFamilies->firstWhere('id', $product->product_family_id);
+                                        $familyCode = $productFamily ? $productFamily->code : '';
+                                    @endphp
                                     
-                                    <!-- Actions -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        @php
-                                            $productFamily = $allFamilies->firstWhere('id', $product->product_family_id);
-                                            $familyCode = $productFamily ? $productFamily->code : '';
-                                        @endphp
-                                        
-                                        @can('view data')
-                                            <a href="{{ route('products.show', [$familyCode, $product->id]) }}" 
-                                               class="text-indigo-600 hover:text-indigo-900 mr-3">
-                                                {{ __('Voir') }}
-                                            </a>
-                                        @endcan
-                                        
-                                        @can('edit data')
-                                            <a href="{{ route('products.edit', [$familyCode, $product->id]) }}" 
-                                               class="text-indigo-600 hover:text-indigo-900 mr-3">
-                                                {{ __('Éditer') }}
-                                            </a>
-                                        @endcan
-                                        
-                                        @can('delete data')
-                                            <button wire:click="confirmDelete({{ $product->id }}, '{{ $product->nom }}')" 
-                                                    class="text-red-600 hover:text-red-900">
-                                                {{ __('Supprimer') }}
-                                            </button>
-                                        @endcan
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                                    @can('view data')
+                                        <a href="{{ route('products.show', [$familyCode, $product->id]) }}" 
+                                        class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                            {{ __('Voir') }}
+                                        </a>
+                                    @endcan
+                                    
+                                    @can('edit data')
+                                        <a href="{{ route('products.edit', [$familyCode, $product->id]) }}" 
+                                        class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                            {{ __('Éditer') }}
+                                        </a>
+                                    @endcan
+                                    
+                                    @can('delete data')
+                                        <button wire:click="confirmDelete({{ $product->id }}, '{{ $product->nom }}')" 
+                                                class="text-red-600 hover:text-red-900">
+                                            {{ __('Supprimer') }}
+                                        </button>
+                                    @endcan
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
                 
                 <!-- Pagination -->
                 <div class="px-4 py-3 border-t">
