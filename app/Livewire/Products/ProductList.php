@@ -297,4 +297,59 @@ class ProductList extends Component
         ]);
     }
 
+    /**
+     * Basculer l'affichage du sélecteur de colonnes
+     */
+    public function toggleColumnSelector()
+    {
+        $this->showColumnSelector = !$this->showColumnSelector;
+    }
+
+    /**
+     * Basculer la visibilité d'une colonne spécifique
+     */
+    public function toggleColumnVisibility($column)
+    {
+        if (in_array($column, $this->visibleColumns)) {
+            // Retirer la colonne des colonnes visibles
+            $this->visibleColumns = array_values(array_diff($this->visibleColumns, [$column]));
+        } else {
+            // Ajouter la colonne aux colonnes visibles
+            $this->visibleColumns[] = $column;
+        }
+        
+        // Sauvegarder les préférences utilisateur
+        if (Auth::check()) {
+            $familyCodes = ProductFamily::whereIn('id', $this->selectedFamilies)
+                                    ->pluck('code')
+                                    ->toArray();
+            $preferencesKey = 'products.columns.' . implode('_', $familyCodes);
+            Auth::user()->setPreference($preferencesKey, $this->visibleColumns);
+        }
+    }
+
+    /**
+     * Réinitialiser les colonnes visibles aux valeurs par défaut
+     */
+    public function resetColumns()
+    {
+        $this->visibleColumns = ['type', 'nom', 'marque'];
+        
+        // Ajouter d'autres colonnes pertinentes si disponibles
+        foreach (['zone_geographique', 'famille_olfactive'] as $col) {
+            if (in_array($col, $this->availableColumns)) {
+                $this->visibleColumns[] = $col;
+            }
+        }
+        
+        // Sauvegarder les préférences utilisateur
+        if (Auth::check()) {
+            $familyCodes = ProductFamily::whereIn('id', $this->selectedFamilies)
+                                    ->pluck('code')
+                                    ->toArray();
+            $preferencesKey = 'products.columns.' . implode('_', $familyCodes);
+            Auth::user()->setPreference($preferencesKey, $this->visibleColumns);
+        }
+    }
+
 }
