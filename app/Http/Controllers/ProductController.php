@@ -19,24 +19,16 @@ class ProductController extends Controller
             abort(403, __('Unauthorized action.'));
         }
 
-        // Si aucun code de famille n'est fourni, rediriger vers la première famille active
-        if (!$familyCode) {
-            $defaultFamily = ProductFamily::where('active', true)->orderBy('name')->first();
-            if ($defaultFamily) {
-                return redirect()->route('products.family.index', $defaultFamily->code);
-            }
-        }
-
-        // Si le code de famille est fourni, récupérer cette famille
-        $family = null;
-        if ($familyCode) {
-            $family = ProductFamily::where('code', $familyCode)->firstOrFail();
-        }
-
         // Récupérer toutes les familles pour le menu latéral
         $families = ProductFamily::where('active', true)->orderBy('name')->get();
+        
+        // Si un code de famille est fourni, récupérer cette famille spécifique
+        $family = null;
+        if ($familyCode) {
+            $family = ProductFamily::where('code', $familyCode)->first();
+        }
 
-        return view('products.index', compact('family', 'families'));
+        return view('products.index', compact('families', 'family'));
     }
 
     /**

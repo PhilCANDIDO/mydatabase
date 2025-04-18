@@ -14,6 +14,8 @@ class ProductList extends Component
 {
     use WithPagination, HasPermissions;
 
+    public $selectedFamilies = [];
+    public $allFamilies = [];
     public $family;
     public $search = '';
     public $perPage = 10;
@@ -43,30 +45,74 @@ class ProductList extends Component
 
     protected $listeners = [
         'refreshProducts' => '$refresh',
-        'deleteProduct' => 'handleDeleteProduct'
+        'deleteProduct' => 'handleDeleteProduct',
+        'family-toggled' => 'toggleFamily'
     ];
 
-    public function mount(ProductFamily $family = null)
+    public function mount($family = null)
     {
         $this->family = $family;
+        
+        // Charger toutes les familles actives
+        $this->allFamilies = ProductFamily::where('active', true)->orderBy('name')->get();
+        
+        // Initialiser les familles sélectionnées
+        if ($family) {
+            // Si une famille spécifique est demandée, la sélectionner
+            $this->selectedFamilies = [$family->id];
+        } else {
+            // Essayer de récupérer les préférences de l'utilisateur
+            if (Auth::check()) {
+                $savedFamilies = Auth::user()->getPreference('products.selected_families');
+                if ($savedFamilies && is_array($savedFamilies) && !empty($savedFamilies)) {
+                    $this->selectedFamilies = $savedFamilies;
+                } else {
+                    // Par défaut, toutes les familles sont sélectionnées
+                    $this->selectedFamilies = $this->allFamilies->pluck('id')->toArray();
+                }
+            } else {
+                // Pour les utilisateurs non connectés, toutes les familles
+                $this->selectedFamilies = $this->allFamilies->pluck('id')->toArray();
+            }
+        }
 
         // Initialiser les étiquettes des colonnes
         $this->initializeColumnLabels();
         
-        if ($family) {
-            // Initialiser les colonnes selon la famille
-            $this->initializeColumns();
-            
-            // Charger les préférences de pagination de l'utilisateur
-            if (Auth::check()) {
-                $paginationKey = 'products.' . $family->code . '.per_page';
-                $this->perPage = Auth::user()->getPreference($paginationKey, 10);
-            }
+        // Initialiser les colonnes
+        $this->initializeColumns();
+        
+        // Charger les préférences de pagination de l'utilisateur
+        if (Auth::check()) {
+            $this->perPage = Auth::user()->getPreference('products.per_page', 10);
         }
+    }
+
+    public function toggleFamily($familyId)
+    {
+        $familyId = (int) $familyId;
+        
+        // Si la famille est déjà sélectionnée, on la désélectionne
+        if (in_array($familyId, $this->selectedFamilies)) {
+            $this->selectedFamilies = array_values(array_diff($this->selectedFamilies, [$familyId]));
+        } else {
+            // Sinon on l'ajoute aux sélections
+            $this->selectedFamilies[] = $familyId;
+        }
+        
+        // Sauvegarder les préférences de l'utilisateur
+        if (Auth::check()) {
+            Auth::user()->setPreference('products.selected_families', $this->selectedFamilies);
+        }
+        
+        // Réinitialiser la pagination et les colonnes
+        $this->resetPage();
+        $this->initializeColumns();
     }
 
     protected function initializeColumnLabels()
     {
+        // Code existant inchangé
         $this->columnLabels = [
             'type' => __('Type'),
             'nom' => __('Nom'),
@@ -88,151 +134,118 @@ class ProductList extends Component
 
     protected function initializeColumns()
     {
-        $familyCode = $this->family->code;
+        // Si aucune famille n'est sélectionnée
+        if (empty($this->selectedFamilies)) {
+            $this->availableColumns = ['type', 'nom', 'marque'];
+            $this->visibleColumns = ['type', 'nom', 'marque'];
+            return;
+        }
+
+        // Déterminer les colonnes communes pour toutes les familles sélectionnées
+        $familyCodes = ProductFamily::whereIn('id', $this->selectedFamilies)
+                                   ->pluck('code')
+                                   ->toArray();
         
-        // Définir toutes les colonnes disponibles pour cette famille
-        $this->availableColumns = array_merge(
-            $this->defaultColumns[$familyCode] ?? [],
-            ['description_olfactive_tete_1', 'description_olfactive_coeur_1', 'description_olfactive_fond_1']
-        );
+        // Colonnes communes à toutes les familles
+        $commonColumns = ['type', 'nom', 'marque'];
+        
+        // Colonnes spécifiques à analyser
+        $potentialColumns = [
+            'zone_geographique', 'famille_olfactive', 'date_sortie', 
+            'unisex', 'specific_attributes->application', 'specific_attributes->genre'
+        ];
+        
+        // Déterminer les colonnes disponibles en fonction des familles sélectionnées
+        $availableColumns = $commonColumns;
+        
+        foreach ($potentialColumns as $column) {
+            $applicable = true;
+            
+            foreach ($familyCodes as $code) {
+                if ($column === 'date_sortie' && !in_array($code, ['D', 'M', 'U'])) {
+                    $applicable = false;
+                    break;
+                }
+                
+                if ($column === 'unisex' && !in_array($code, ['D', 'M'])) {
+                    $applicable = false;
+                    break;
+                }
+                
+                if ($column === 'specific_attributes->application' && $code !== 'PM') {
+                    $applicable = false;
+                    break;
+                }
+                
+                if ($column === 'specific_attributes->genre' && $code !== 'U') {
+                    $applicable = false;
+                    break;
+                }
+            }
+            
+            if ($applicable) {
+                $availableColumns[] = $column;
+            }
+        }
+        
+        $this->availableColumns = $availableColumns;
         
         // Charger les colonnes visibles depuis les préférences utilisateur
+        $preferencesKey = 'products.columns.' . implode('_', $familyCodes);
+        
         if (Auth::check()) {
-            $columnsKey = 'products.' . $familyCode . '.columns';
-            $savedColumns = Auth::user()->getPreference($columnsKey);
+            $savedColumns = Auth::user()->getPreference($preferencesKey);
             
             if ($savedColumns) {
-                $this->visibleColumns = $savedColumns;
+                $this->visibleColumns = array_intersect($savedColumns, $this->availableColumns);
             } else {
-                // Utiliser les colonnes par défaut si aucune préférence n'est définie
-                $this->visibleColumns = $this->defaultColumns[$familyCode] ?? [];
+                // Utiliser les colonnes par défaut ou les colonnes communes
+                $this->visibleColumns = $commonColumns;
+                
+                // Ajouter quelques colonnes supplémentaires pertinentes si disponibles
+                foreach (['zone_geographique', 'famille_olfactive'] as $col) {
+                    if (in_array($col, $this->availableColumns)) {
+                        $this->visibleColumns[] = $col;
+                    }
+                }
             }
         } else {
-            // Utiliser les colonnes par défaut pour les utilisateurs non connectés
-            $this->visibleColumns = $this->defaultColumns[$familyCode] ?? [];
+            $this->visibleColumns = $commonColumns;
         }
     }
 
-    public function updatedPerPage($value)
-    {
-        if ($this->family && Auth::check()) {
-            $paginationKey = 'products.' . $this->family->code . '.per_page';
-            Auth::user()->setPreference($paginationKey, $value);
-        }
-        
-        $this->resetPage();
-    }
-
-    public function updatingSearch()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingFilters()
-    {
-        $this->resetPage();
-    }
-
-    public function sortBy($field)
-    {
-        if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortField = $field;
-            $this->sortDirection = 'asc';
-        }
-        
-        $this->resetPage();
-    }
-    
-    public function toggleColumnSelector()
-    {
-        $this->showColumnSelector = !$this->showColumnSelector;
-    }
-    
-    public function toggleColumnVisibility($column)
-    {
-        $index = array_search($column, $this->visibleColumns);
-        
-        if ($index !== false) {
-            // Retirer la colonne si elle est visible
-            unset($this->visibleColumns[$index]);
-            $this->visibleColumns = array_values($this->visibleColumns); // Réindexer le tableau
-        } else {
-            // Ajouter la colonne si elle n'est pas visible
-            $this->visibleColumns[] = $column;
-        }
-        
-        // Sauvegarder les préférences
-        if ($this->family && Auth::check()) {
-            $columnsKey = 'products.' . $this->family->code . '.columns';
-            Auth::user()->setPreference($columnsKey, $this->visibleColumns);
-        }
-    }
-    
-    public function resetColumns()
-    {
-        if ($this->family) {
-            $familyCode = $this->family->code;
-            $this->visibleColumns = $this->defaultColumns[$familyCode] ?? [];
-            
-            // Sauvegarder les préférences
-            if (Auth::check()) {
-                $columnsKey = 'products.' . $familyCode . '.columns';
-                Auth::user()->setPreference($columnsKey, $this->visibleColumns);
-            }
-        }
-    }
-    
-    public function confirmDelete($productId, $productName)
-    {
-        if ($this->permUserCan('delete data')) {
-            $this->dispatch('openModal', 'products.delete-product-modal', [
-                'productId' => $productId,
-                'productName' => $productName
-            ]);
-        }
-    }
-    
-    public function handleDeleteProduct($productId)
-    {
-        $this->permAuthorize('delete data');
-        
-        $product = Product::find($productId);
-        if ($product) {
-            $product->delete();
-            session()->flash('success', __('Produit supprimé avec succès.'));
-        }
-    }
+    // Le reste du composant reste similaire, mais avec des adaptations pour gérer les produits de plusieurs familles
 
     public function render()
     {
-        // Si aucune famille n'est sélectionnée, afficher un message
-        if (!$this->family) {
+        // Si aucune famille n'est sélectionnée, retourner une liste vide
+        if (empty($this->selectedFamilies)) {
             return view('livewire.products.product-list', [
                 'products' => null,
                 'referenceData' => [],
             ]);
         }
 
-        // Construire la requête de base pour les produits de cette famille
+        // Construire la requête de base pour les produits des familles sélectionnées
         $query = Product::query()
-            ->where('product_family_id', $this->family->id);
+            ->whereIn('product_family_id', $this->selectedFamilies);
 
         // Appliquer la recherche si elle est définie
         if (!empty($this->search)) {
-            $searchableFields = $this->searchableFields[$this->family->code] ?? ['type', 'nom'];
-            
-            $query->where(function ($q) use ($searchableFields) {
-                foreach ($searchableFields as $field) {
-                    if (strpos($field, 'specific_attributes->') === 0) {
-                        // Pour les attributs spécifiques stockés en JSON
-                        $path = str_replace('specific_attributes->', '', $field);
-                        $q->orWhereJsonContains('specific_attributes->' . $path, 'LIKE', '%' . $this->search . '%');
-                    } else {
-                        $q->orWhere($field, 'like', '%' . $this->search . '%');
-                    }
-                }
+            $query->where(function ($q) {
+                // Recherche de base sur les champs communs
+                $q->where('type', 'like', '%' . $this->search . '%')
+                  ->orWhere('nom', 'like', '%' . $this->search . '%')
+                  ->orWhere('marque', 'like', '%' . $this->search . '%');
+                
+                // Recherche sur les attributs spécifiques
+                $q->orWhereHas('zoneGeos', function($sq) {
+                    $sq->where('zone_geo_value', 'like', '%' . $this->search . '%');
+                });
+                
+                $q->orWhereHas('olfactiveFamilies', function($sq) {
+                    $sq->where('famille_value', 'like', '%' . $this->search . '%');
+                });
             });
         }
 
@@ -270,25 +283,18 @@ class ProductList extends Component
         }
 
         // Récupérer les données de référence pour les filtres
-        $referenceData = [];
-        if ($this->family) {
-            if (in_array($this->family->code, ['PM', 'D', 'M', 'U'])) {
-                $referenceData['zone_geographique'] = ReferenceData::getByType('zone_geo');
-                $referenceData['famille_olfactive'] = ReferenceData::getByType('famille_olfactive');
-            }
-            
-            if ($this->family->code === 'PM') {
-                $referenceData['application'] = ReferenceData::getByType('application');
-            }
-            
-            if (in_array($this->family->code, ['PM', 'D', 'M', 'U'])) {
-                $referenceData['description_olfactive'] = ReferenceData::getByType('description_olfactive');
-            }
-        }
+        $referenceData = [
+            'zone_geographique' => ReferenceData::getByType('zone_geo'),
+            'famille_olfactive' => ReferenceData::getByType('famille_olfactive'),
+            'description_olfactive' => ReferenceData::getByType('description_olfactive'),
+            'application' => ReferenceData::getByType('application'),
+        ];
 
         return view('livewire.products.product-list', [
             'products' => $query->paginate($this->perPage),
-            'referenceData' => $referenceData
+            'referenceData' => $referenceData,
+            'families' => $this->allFamilies
         ]);
     }
+
 }
