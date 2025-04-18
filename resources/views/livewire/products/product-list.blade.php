@@ -130,7 +130,7 @@
                 
                 <!-- Sélecteur de colonnes -->
                 @if($showColumnSelector)
-                <div class="mt-3 p-3 bg-gray-50 rounded-md">
+                <div class="mt-3 p-3 bg-gray-50 rounded-md" x-data x-on:columns-reset.window="$nextTick(() => { document.querySelectorAll('input[type=checkbox]').forEach(el => { el.checked = $visibleColumns.includes(el.value) }); })">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="font-medium text-gray-700">{{ __('Colonnes visibles') }}</h3>
                         <button wire:click="resetColumns" class="text-sm text-blue-600 hover:text-blue-800">
@@ -141,141 +141,129 @@
                         <!-- Colonnes de base -->
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('type')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('type', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="type"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Type') }}</span>
                         </label>
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('nom')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('nom', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="nom"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Nom') }}</span>
                         </label>
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('marque')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('marque', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="marque"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Marque') }}</span>
                         </label>
                         
                         <!-- Colonnes produits spécifiques -->
-                        @if(in_array('specific_attributes->application', $availableColumns))
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('specific_attributes->application')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('specific_attributes->application', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="specific_attributes->application"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Application') }}</span>
                         </label>
-                        @endif
                         
-                        @if(in_array('date_sortie', $availableColumns))
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('date_sortie')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('date_sortie', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="date_sortie"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Année') }}</span>
                         </label>
-                        @endif
                         
-                        @if(in_array('zone_geographique', $availableColumns))
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('zone_geographique')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('zone_geographique', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="zone_geographique"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Zone Géographique') }}</span>
                         </label>
-                        @endif
                         
-                        @if(in_array('famille_olfactive', $availableColumns))
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('famille_olfactive')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('famille_olfactive', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="famille_olfactive"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Famille Olfactive') }}</span>
                         </label>
-                        @endif
                         
                         <!-- Notes olfactives -->
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('notes_tete_1')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('notes_tete_1', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="notes_tete_1"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Note de tête 1') }}</span>
                         </label>
                         
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('notes_tete_2')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('notes_tete_2', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="notes_tete_2"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Note de tête 2') }}</span>
                         </label>
                         
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('notes_coeur_1')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('notes_coeur_1', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="notes_coeur_1"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Note de cœur 1') }}</span>
                         </label>
                         
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('notes_coeur_2')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('notes_coeur_2', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="notes_coeur_2"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Note de cœur 2') }}</span>
                         </label>
                         
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('notes_fond_1')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('notes_fond_1', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="notes_fond_1"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Note de fond 1') }}</span>
                         </label>
                         
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('notes_fond_2')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('notes_fond_2', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="notes_fond_2"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Note de fond 2') }}</span>
                         </label>
                         
-                        @if(in_array('unisex', $availableColumns))
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('unisex')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('unisex', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="unisex"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Unisex') }}</span>
                         </label>
-                        @endif
                         
-                        @if(in_array('specific_attributes->genre', $availableColumns))
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('specific_attributes->genre')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('specific_attributes->genre', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="specific_attributes->genre"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Genre') }}</span>
                         </label>
-                        @endif
                         
                         <label class="inline-flex items-center">
                             <input type="checkbox" 
-                                wire:click="toggleColumnVisibility('avatar')"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                {{ in_array('avatar', $visibleColumns) ? 'checked' : '' }}>
+                                wire:model.live="visibleColumns"
+                                value="avatar"
+                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <span class="ml-2 text-sm text-gray-700">{{ __('Avatar') }}</span>
                         </label>
                     </div>

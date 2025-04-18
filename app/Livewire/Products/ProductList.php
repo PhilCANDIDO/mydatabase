@@ -135,84 +135,32 @@ class ProductList extends Component
 
     protected function initializeColumns()
     {
-        // Si aucune famille n'est sélectionnée
-        if (empty($this->selectedFamilies)) {
-            $this->availableColumns = ['type', 'nom', 'marque'];
-            $this->visibleColumns = ['type', 'nom', 'marque'];
-            return;
-        }
-    
-        // Déterminer les colonnes communes pour toutes les familles sélectionnées
-        $familyCodes = ProductFamily::whereIn('id', $this->selectedFamilies)
-                                   ->pluck('code')
-                                   ->toArray();
-        
-        // Colonnes communes à toutes les familles
-        $commonColumns = ['type', 'nom', 'marque', 'avatar'];
-        
-        // Colonnes spécifiques à analyser
-        $potentialColumns = [
-            'zone_geographique', 'famille_olfactive', 'date_sortie', 
-            'unisex', 'specific_attributes->application', 'specific_attributes->genre'
-        ];
-        
-        // Colonnes de notes olfactives (disponibles pour toutes les familles sauf W)
-        $noteColumns = [
+        // Définir toutes les colonnes disponibles sans restriction par famille
+        $this->availableColumns = [
+            'type', 'nom', 'marque', 'specific_attributes->application', 
+            'date_sortie', 'zone_geographique', 'famille_olfactive',
+            'specific_attributes->genre', 'unisex', 'avatar',
             'notes_tete_1', 'notes_tete_2', 
             'notes_coeur_1', 'notes_coeur_2', 
             'notes_fond_1', 'notes_fond_2'
         ];
         
-        // Déterminer les colonnes disponibles en fonction des familles sélectionnées
-        $availableColumns = $commonColumns;
-        
-        // Ajouter les colonnes conditionnelles standards
-        foreach ($potentialColumns as $column) {
-            $applicable = true;
-            
-            foreach ($familyCodes as $code) {
-                if ($column === 'date_sortie' && !in_array($code, ['D', 'M', 'U'])) {
-                    $applicable = false;
-                    break;
-                }
-                
-                if ($column === 'unisex' && !in_array($code, ['D', 'M'])) {
-                    $applicable = false;
-                    break;
-                }
-                
-                if ($column === 'specific_attributes->application' && $code !== 'PM') {
-                    $applicable = false;
-                    break;
-                }
-                
-                if ($column === 'specific_attributes->genre' && $code !== 'U') {
-                    $applicable = false;
-                    break;
-                }
-            }
-            
-            if ($applicable) {
-                $availableColumns[] = $column;
-            }
+        // Si aucune famille n'est sélectionnée, utiliser seulement les colonnes de base
+        if (empty($this->selectedFamilies)) {
+            $this->availableColumns = ['type', 'nom', 'marque'];
+            $this->visibleColumns = ['type', 'nom', 'marque'];
+            return;
         }
         
-        // Ajouter les colonnes de notes olfactives si au moins une famille autre que W est sélectionnée
-        $hasNonWFamily = false;
-        foreach ($familyCodes as $code) {
-            if ($code !== 'W') {
-                $hasNonWFamily = true;
-                break;
-            }
-        }
-        
-        if ($hasNonWFamily) {
-            $availableColumns = array_merge($availableColumns, $noteColumns);
-        }
-        
-        $this->availableColumns = $availableColumns;
+        // Colonnes par défaut à afficher
+        $defaultColumns = [
+            'type', 'nom', 'marque', 'specific_attributes->application', 'date_sortie'
+        ];
         
         // Charger les colonnes visibles depuis les préférences utilisateur
+        $familyCodes = ProductFamily::whereIn('id', $this->selectedFamilies)
+                                ->pluck('code')
+                                ->toArray();
         $preferencesKey = 'products.columns.' . implode('_', $familyCodes);
         
         if (Auth::check()) {
@@ -222,31 +170,15 @@ class ProductList extends Component
                 $this->visibleColumns = array_intersect($savedColumns, $this->availableColumns);
             } else {
                 // Utiliser les colonnes par défaut
-                $this->visibleColumns = ['type', 'nom', 'marque'];
-                
-                // Ajouter quelques colonnes supplémentaires pertinentes si disponibles
-                $defaultExtraColumns = ['specific_attributes->application', 'date_sortie', 'zone_geographique', 'famille_olfactive'];
-                foreach ($defaultExtraColumns as $col) {
-                    if (in_array($col, $this->availableColumns)) {
-                        $this->visibleColumns[] = $col;
-                    }
-                }
+                $this->visibleColumns = $defaultColumns;
             }
         } else {
-            $this->visibleColumns = ['type', 'nom', 'marque'];
-            
-            // Ajouter d'autres colonnes par défaut même pour utilisateurs non connectés
-            if (in_array('specific_attributes->application', $this->availableColumns)) {
-                $this->visibleColumns[] = 'specific_attributes->application';
-            }
-            if (in_array('date_sortie', $this->availableColumns)) {
-                $this->visibleColumns[] = 'date_sortie';
-            }
+            $this->visibleColumns = $defaultColumns;
         }
         
         // Vérifier si les visibleColumns sont vides (cas rare mais possible)
         if (empty($this->visibleColumns)) {
-            $this->visibleColumns = array_slice($this->availableColumns, 0, 3);
+            $this->visibleColumns = $defaultColumns;
         }
     }
 
@@ -368,15 +300,10 @@ class ProductList extends Component
      */
     public function resetColumns()
     {
-        $this->visibleColumns = ['type', 'nom', 'marque'];
-        
-        // Ajouter quelques colonnes supplémentaires par défaut si disponibles
-        $defaultExtraColumns = ['specific_attributes->application', 'date_sortie', 'zone_geographique', 'famille_olfactive'];
-        foreach ($defaultExtraColumns as $col) {
-            if (in_array($col, $this->availableColumns)) {
-                $this->visibleColumns[] = $col;
-            }
-        }
+        // Réinitialiser aux colonnes par défaut uniquement
+        $this->visibleColumns = [
+            'type', 'nom', 'marque', 'specific_attributes->application', 'date_sortie'
+        ];
         
         // Sauvegarder les préférences utilisateur
         if (Auth::check()) {
@@ -386,5 +313,8 @@ class ProductList extends Component
             $preferencesKey = 'products.columns.' . implode('_', $familyCodes);
             Auth::user()->setPreference($preferencesKey, $this->visibleColumns);
         }
+        
+        // Force la mise à jour de l'interface
+        $this->dispatch('columnsReset');
     }
 }
