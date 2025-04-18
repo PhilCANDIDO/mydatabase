@@ -11,16 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Table pour les notes olfactives
         Schema::create('product_olfactive_notes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->enum('position', ['tete', 'coeur', 'fond']);
-            $table->integer('order');
-            $table->string('description_value');
             $table->timestamps();
-            
-            $table->index(['product_id', 'position', 'order']);
         });
     }
 
