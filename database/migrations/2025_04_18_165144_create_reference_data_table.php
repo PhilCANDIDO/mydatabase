@@ -6,20 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('reference_data', function (Blueprint $table) {
             $table->id();
+            $table->string('type'); // Ex: 'application', 'zone_geo', 'famille_olfactive', etc.
+            $table->string('value');
+            $table->string('label');
+            $table->text('description')->nullable();
+            $table->integer('order')->default(0);
+            $table->boolean('active')->default(true);
+            $table->boolean('is_multiple')->default(false);
             $table->timestamps();
+            
+            // Index composé pour la recherche rapide
+            $table->unique(['type', 'value']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('reference_data');

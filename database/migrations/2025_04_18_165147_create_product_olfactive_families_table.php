@@ -6,20 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
+        // Table pour les familles olfactives
         Schema::create('product_olfactive_families', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->string('famille_value');
             $table->timestamps();
+            
+            $table->unique(['product_id', 'famille_value']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('product_olfactive_families');
