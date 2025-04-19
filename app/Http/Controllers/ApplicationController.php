@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Application;
 use Illuminate\Http\Request;
 
 class ApplicationController extends Controller
@@ -11,7 +12,7 @@ class ApplicationController extends Controller
      */
     public function index()
     {
-        //
+        return view('applications.index');
     }
 
     /**
@@ -19,46 +20,37 @@ class ApplicationController extends Controller
      */
     public function create()
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        return view('applications.create');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Application $application)
     {
-        //
+        return view('applications.show', compact('application'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Application $application)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
+        return view('applications.edit', compact('application'));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Application $application)
     {
-        //
+        try {
+            $application->delete();
+            return redirect()->route('applications.index')
+                ->with('success', __('Application deleted successfully.'));
+        } catch (\Exception $e) {
+            return redirect()->route('applications.index')
+                ->with('error', __('Error deleting application: ') . $e->getMessage());
+        }
     }
 }
