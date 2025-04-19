@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ProductFamily;
 use Illuminate\Http\Request;
 
 class ProductFamilyController extends Controller
@@ -11,54 +12,22 @@ class ProductFamilyController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        return view('product-families.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(ProductFamily $productFamily)
     {
-        //
+        return view('product-families.show', compact('productFamily'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(ProductFamily $productFamily)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return view('product-families.edit', compact('productFamily'));
     }
 }
