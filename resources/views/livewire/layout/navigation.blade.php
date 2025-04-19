@@ -33,6 +33,10 @@ new class extends Component
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')" wire:navigate>
+                        {{ __('Produits') }}
+                    </x-nav-link>
                     
                     @hasanyrole('Super|Superviser')
                     <div class="relative h-full flex items-center" x-data="{ open: false }" @click.away="open = false">
@@ -167,6 +171,10 @@ new class extends Component
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')" wire:navigate>
+                {{ __('Produits') }}
             </x-responsive-nav-link>
 
             <!-- Menu de données de référence pour la version mobile -->

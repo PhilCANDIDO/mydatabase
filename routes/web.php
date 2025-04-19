@@ -43,7 +43,7 @@ Route::middleware(['auth', 'role:Super'])->group(function () {
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 });
 
-// Routes pour les Applications (accessibles uniquement aux rôles Superviser et Super)
+// Routes pour les Données de référence (accessibles uniquement aux rôles Superviser et Super)
 Route::middleware(['auth', 'role_or_permission:Superviser|Super'])->group(function () {
     // Applications
     Route::resource('product-families', ProductFamilyController::class);
@@ -60,6 +60,11 @@ Route::middleware(['auth', 'role_or_permission:Superviser|Super'])->group(functi
     // Zones Géographiques
     Route::resource('zone-geos', ZoneGeoController::class);
 
+});
+
+Route::middleware(['auth'])->group(function () {
+    // Routes pour les produits (accessibles à tous les rôles)
+    Route::resource('products', ProductController::class);
 });
 
 require __DIR__.'/auth.php';
