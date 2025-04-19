@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OlfactiveFamily;
 use Illuminate\Http\Request;
 
 class OlfactiveFamilyController extends Controller
@@ -11,7 +12,7 @@ class OlfactiveFamilyController extends Controller
      */
     public function index()
     {
-        //
+        return view('olfactive-families.index');
     }
 
     /**
@@ -19,46 +20,37 @@ class OlfactiveFamilyController extends Controller
      */
     public function create()
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        return view('olfactive-families.create');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(OlfactiveFamily $olfactiveFamily)
     {
-        //
+        return view('olfactive-families.show', compact('olfactiveFamily'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(OlfactiveFamily $olfactiveFamily)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
+        return view('olfactive-families.edit', compact('olfactiveFamily'));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(OlfactiveFamily $olfactiveFamily)
     {
-        //
+        try {
+            $olfactiveFamily->delete();
+            return redirect()->route('olfactive-families.index')
+                ->with('success', __('Famille olfactive supprimée avec succès.'));
+        } catch (\Exception $e) {
+            return redirect()->route('olfactive-families.index')
+                ->with('error', __('Erreur lors de la suppression de la famille olfactive: ') . $e->getMessage());
+        }
     }
 }
