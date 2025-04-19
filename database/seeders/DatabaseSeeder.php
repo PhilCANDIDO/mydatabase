@@ -20,6 +20,11 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             AdminUserSeeder::class,
             UsersSeeder::class,
+            ProductFamiliesSeeder::class,
+            ApplicationsSeeder::class,
+            ZoneGeosSeeder::class,
+            OlfactiveFamiliesSeeder::class,
+            OlfactiveNotesSeeder::class,
         ]);
 
     }
