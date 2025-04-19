@@ -54,6 +54,18 @@
             <main>
                 {{ $slot }}
             </main>
+
+            <!-- Footer with Git Info -->
+            @if(app()->environment('local', 'development', 'staging'))
+            <footer class="py-3 bg-gray-100 border-t border-gray-200 text-center text-xs text-gray-600">
+                <div class="container mx-auto">
+                    {{ config('app.name') }} v{{ config('app.version', '1.0.0') }} 
+                    @if(app()->make('git.info')->hasGitInfo())
+                        <span class="px-2">|</span> {{ app()->make('git.info')->getVersionInfo() }}
+                    @endif
+                </div>
+            </footer>
+            @endif
         </div>
         <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     </body>
