@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OlfactiveNote;
 use Illuminate\Http\Request;
 
 class OlfactiveNoteController extends Controller
@@ -11,7 +12,7 @@ class OlfactiveNoteController extends Controller
      */
     public function index()
     {
-        //
+        return view('olfactive-notes.index');
     }
 
     /**
@@ -19,46 +20,37 @@ class OlfactiveNoteController extends Controller
      */
     public function create()
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        return view('olfactive-notes.create');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(OlfactiveNote $olfactiveNote)
     {
-        //
+        return view('olfactive-notes.show', compact('olfactiveNote'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(OlfactiveNote $olfactiveNote)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
+        return view('olfactive-notes.edit', compact('olfactiveNote'));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(OlfactiveNote $olfactiveNote)
     {
-        //
+        try {
+            $olfactiveNote->delete();
+            return redirect()->route('olfactive-notes.index')
+                ->with('success', __('Note olfactive supprimée avec succès.'));
+        } catch (\Exception $e) {
+            return redirect()->route('olfactive-notes.index')
+                ->with('error', __('Erreur lors de la suppression de la note olfactive: ') . $e->getMessage());
+        }
     }
 }
