@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\OlfactiveFamilyController;
+use App\Http\Controllers\OlfactiveNoteController;
+use App\Http\Controllers\ZoneGeoController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductFamilyController;
 use App\Http\Controllers\ReferenceDataController;
@@ -37,6 +41,25 @@ Route::middleware(['auth', 'role:Super'])->group(function () {
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+});
+
+// Routes pour les Applications (accessibles uniquement aux rôles Superviser et Super)
+Route::middleware(['auth', 'role_or_permission:Superviser|Super'])->group(function () {
+    // Applications
+    Route::resource('product-families', ProductFamilyController::class);
+
+    // Applications
+    Route::resource('applications', ApplicationController::class);
+    
+    // Familles Olfactives
+    Route::resource('olfactive-families', OlfactiveFamilyController::class);
+    
+    // Notes Olfactives
+    Route::resource('olfactive-notes', OlfactiveNoteController::class);
+    
+    // Zones Géographiques
+    Route::resource('zone-geos', ZoneGeoController::class);
+
 });
 
 require __DIR__.'/auth.php';
