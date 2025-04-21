@@ -1,7 +1,7 @@
 <div>
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <div class="flex flex-col lg:flex-row gap-6">
         <!-- Colonne de gauche: Familles de produits & Actions -->
-        <div class="lg:col-span-1">
+        <div class="w-full lg:w-64 flex-shrink-0">
             <!-- Section Familles de produits -->
             <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
                 <div class="p-4 bg-white border-b border-gray-200">
@@ -50,7 +50,7 @@
         </div>
 
         <!-- Colonne de droite: Tableau des produits avec ses outils -->
-        <div class="lg:col-span-3">
+        <div class="flex-grow">
             <div class="bg-white shadow-md rounded-lg overflow-hidden">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <!-- Barre d'outils du tableau -->
@@ -422,6 +422,12 @@
                                         {{ __('Note de fond 2') }}
                                     </th>
                                     @endif
+
+                                    @if($visibleColumns['product_avatar'])
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {{ __('Avatar') }}
+                                    </th>
+                                    @endif
                                     
                                     <!-- Actions -->
                                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -560,6 +566,20 @@
                                             <div class="text-sm text-gray-900">
                                                 {{ $baseNotes->isNotEmpty() && isset($baseNotes[1]) ? $baseNotes[1]->olfactive_note_name : '' }}
                                             </div>
+                                        </td>
+                                        @endif
+
+                                        @if($visibleColumns['product_avatar'])
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @if($product->product_avatar)
+                                                <img src="{{ asset('storage/' . $product->product_avatar) }}" alt="{{ $product->product_name }}" class="h-10 w-10 rounded-full object-cover">
+                                            @else
+                                                <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6.5 20H4a1 1 0 01-1-1v-1.5M20.5 20H18a1 1 0 01-1-1v-1.5M4 13h16M4 9h16M4 5h16"/>
+                                                    </svg>
+                                                </div>
+                                            @endif
                                         </td>
                                         @endif
                                         
