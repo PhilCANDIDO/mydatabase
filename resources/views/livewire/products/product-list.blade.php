@@ -191,13 +191,16 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <!-- Application -->
                             <div>
-                                <label for="filter-application" class="block text-sm font-medium text-gray-700">{{ __('Application') }}</label>
-                                <select id="filter-application" wire:model.live="filters.application_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                    <option value="">{{ __('Toutes les applications') }}</option>
-                                    @foreach($applications as $application)
-                                        <option value="{{ $application->id }}">{{ $application->application_name }}</option>
-                                    @endforeach
-                                </select>
+                                <x-filter-dropdown 
+                                    id="filter-application"
+                                    label="{{ __('Application') }}"
+                                    :options="$applications"
+                                    placeholder="{{ __('Rechercher une application...') }}"
+                                    :selected="$filters['application_id']"
+                                    displayKey="application_name"
+                                    valueKey="id"
+                                    wireModel="filters.application_id"
+                                />
                             </div>
                             
                             <!-- Année de sortie -->
@@ -208,24 +211,30 @@
                             
                             <!-- Zone Géographique -->
                             <div>
-                                <label for="filter-zone" class="block text-sm font-medium text-gray-700">{{ __('Zone Géographique') }}</label>
-                                <select id="filter-zone" wire:model.live="filters.zone_geo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                    <option value="">{{ __('Toutes les zones') }}</option>
-                                    @foreach($zoneGeos as $zone)
-                                        <option value="{{ $zone->id }}">{{ $zone->zone_geo_name }}</option>
-                                    @endforeach
-                                </select>
+                                <x-filter-dropdown 
+                                    id="filter-zone"
+                                    label="{{ __('Zone Géographique') }}"
+                                    :options="$zoneGeos"
+                                    placeholder="{{ __('Rechercher une zone...') }}"
+                                    :selected="$filters['zone_geo']"
+                                    displayKey="zone_geo_name"
+                                    valueKey="id"
+                                    wireModel="filters.zone_geo"
+                                />
                             </div>
                             
                             <!-- Famille Olfactive -->
                             <div>
-                                <label for="filter-olfactive" class="block text-sm font-medium text-gray-700">{{ __('Famille Olfactive') }}</label>
-                                <select id="filter-olfactive" wire:model.live="filters.olfactive_family" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                    <option value="">{{ __('Toutes les familles') }}</option>
-                                    @foreach($olfactiveFamilies as $family)
-                                        <option value="{{ $family->id }}">{{ $family->olfactive_family_name }}</option>
-                                    @endforeach
-                                </select>
+                                <x-filter-dropdown 
+                                    id="filter-olfactive"
+                                    label="{{ __('Famille Olfactive') }}"
+                                    :options="$olfactiveFamilies"
+                                    placeholder="{{ __('Rechercher famille olfactive...') }}"
+                                    :selected="$filters['olfactive_family']"
+                                    displayKey="olfactive_family_name"
+                                    valueKey="id"
+                                    wireModel="filters.olfactive_family"
+                                />
                             </div>
                             
                             <!-- Unisex -->
@@ -250,33 +259,42 @@
                             
                             <!-- Notes Olfactives -->
                             <div>
-                                <label for="filter-head-note" class="block text-sm font-medium text-gray-700">{{ __('Note de tête') }}</label>
-                                <select id="filter-head-note" wire:model.live="filters.head_note" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                    <option value="">{{ __('Toutes') }}</option>
-                                    @foreach($olfactiveNotes as $note)
-                                        <option value="{{ $note->id }}">{{ $note->olfactive_note_name }}</option>
-                                    @endforeach
-                                </select>
+                                <x-filter-dropdown 
+                                    id="filter-head-note"
+                                    label="{{ __('Note de tête') }}"
+                                    :options="$olfactiveNotes"
+                                    placeholder="{{ __('Rechercher une note de tête...') }}"
+                                    :selected="$filters['head_note']"
+                                    displayKey="olfactive_note_name"
+                                    valueKey="id"
+                                    wireModel="filters.head_note"
+                                />
                             </div>
                             
                             <div>
-                                <label for="filter-heart-note" class="block text-sm font-medium text-gray-700">{{ __('Note de cœur') }}</label>
-                                <select id="filter-heart-note" wire:model.live="filters.heart_note" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                    <option value="">{{ __('Toutes') }}</option>
-                                    @foreach($olfactiveNotes as $note)
-                                        <option value="{{ $note->id }}">{{ $note->olfactive_note_name }}</option>
-                                    @endforeach
-                                </select>
+                                <x-filter-dropdown 
+                                    id="filter-heart-note"
+                                    label="{{ __('Note de cœur') }}"
+                                    :options="$olfactiveNotes"
+                                    placeholder="{{ __('Rechercher une note de coeur...') }}"
+                                    :selected="$filters['heart_note']"
+                                    displayKey="olfactive_note_name"
+                                    valueKey="id"
+                                    wireModel="filters.heart_note"
+                                />
                             </div>
                             
                             <div>
-                                <label for="filter-base-note" class="block text-sm font-medium text-gray-700">{{ __('Note de fond') }}</label>
-                                <select id="filter-base-note" wire:model.live="filters.base_note" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                    <option value="">{{ __('Toutes') }}</option>
-                                    @foreach($olfactiveNotes as $note)
-                                        <option value="{{ $note->id }}">{{ $note->olfactive_note_name }}</option>
-                                    @endforeach
-                                </select>
+                                <x-filter-dropdown 
+                                    id="filter-base-note"
+                                    label="{{ __('Note de fond') }}"
+                                    :options="$olfactiveNotes"
+                                    placeholder="{{ __('Rechercher une note de fond...') }}"
+                                    :selected="$filters['base_note']"
+                                    displayKey="olfactive_note_name"
+                                    valueKey="id"
+                                    wireModel="filters.base_note"
+                                />
                             </div>
                         </div>
                     </div>
@@ -633,8 +651,8 @@
 
     <!-- JavaScript pour la fonctionnalité de copie dans le presse-papiers -->
     <script>
-        document.addEventListener('livewire:initialized', () => {
-            @this.on('copy-to-clipboard', ({ text }) => {
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('copy-to-clipboard', ({ text }) => {
                 navigator.clipboard.writeText(text)
                     .then(() => {
                         // Montrer une notification de succès
