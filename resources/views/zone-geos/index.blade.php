@@ -15,16 +15,21 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('message'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                    {{ session('message') }}
-                </div>
+            @if (session('message') || session('success'))
+                <x-auto-dismiss-alert 
+                    type="success" 
+                    :message="session('message') ?? session('success')" 
+                    :auto-dismiss="true"
+                    :dismiss-after="15000"
+                />
             @endif
 
             @if (session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {{ session('error') }}
-                </div>
+                <x-auto-dismiss-alert 
+                    type="error" 
+                    :message="session('error')" 
+                    :auto-dismiss="false"
+                />
             @endif
 
             <livewire:zone-geos.zone-geo-list />
