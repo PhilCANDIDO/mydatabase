@@ -100,6 +100,67 @@
                             @endforeach
                         </div>
                     </div>
+
+                    <!-- Affichage des filtres actifs -->
+                    <div class="mb-4">
+                        @php
+                            $activeFilters = [];
+                            if($filters['application_id']) {
+                                $app = $applications->firstWhere('id', $filters['application_id']);
+                                $activeFilters['application_id'] = __('Application') . ': ' . ($app ? $app->application_name : '');
+                            }
+                            if($filters['product_annee_sortie']) {
+                                $activeFilters['product_annee_sortie'] = __('Année') . ': ' . $filters['product_annee_sortie'];
+                            }
+                            if($filters['zone_geo']) {
+                                $zone = $zoneGeos->firstWhere('id', $filters['zone_geo']);
+                                $activeFilters['zone_geo'] = __('Zone Géographique') . ': ' . ($zone ? $zone->zone_geo_name : '');
+                            }
+                            if($filters['olfactive_family']) {
+                                $family = $olfactiveFamilies->firstWhere('id', $filters['olfactive_family']);
+                                $activeFilters['olfactive_family'] = __('Famille Olfactive') . ': ' . ($family ? $family->olfactive_family_name : '');
+                            }
+                            if($filters['product_unisex'] !== null) {
+                                $activeFilters['product_unisex'] = __('Unisex') . ': ' . ($filters['product_unisex'] ? __('Oui') : __('Non'));
+                            }
+                            if($filters['product_genre']) {
+                                $activeFilters['product_genre'] = __('Genre') . ': ' . ($filters['product_genre'] === 'M' ? __('Masculin') : __('Féminin'));
+                            }
+                            if($filters['head_note']) {
+                                $note = $olfactiveNotes->firstWhere('id', $filters['head_note']);
+                                $activeFilters['head_note'] = __('Note de tête') . ': ' . ($note ? $note->olfactive_note_name : '');
+                            }
+                            if($filters['heart_note']) {
+                                $note = $olfactiveNotes->firstWhere('id', $filters['heart_note']);
+                                $activeFilters['heart_note'] = __('Note de cœur') . ': ' . ($note ? $note->olfactive_note_name : '');
+                            }
+                            if($filters['base_note']) {
+                                $note = $olfactiveNotes->firstWhere('id', $filters['base_note']);
+                                $activeFilters['base_note'] = __('Note de fond') . ': ' . ($note ? $note->olfactive_note_name : '');
+                            }
+                        @endphp
+
+                        @if(count($activeFilters) > 0)
+                        <div class="mt-3">
+                            <div class="flex flex-wrap items-center">
+                                <span class="text-sm font-medium text-gray-700 mr-2">{{ __('Filtres appliqués:') }}</span>
+                                @foreach($activeFilters as $filterKey => $filterLabel)
+                                    <span class="px-2 py-1 m-1 text-xs rounded-full bg-yellow-100 text-yellow-800">
+                                        {{ $filterLabel }}
+                                        <button type="button" class="ml-1 text-yellow-600 hover:text-yellow-900 focus:outline-none" wire:click="resetFilter('{{ $filterKey }}')">
+                                            &times;
+                                        </button>
+                                    </span>
+                                @endforeach
+                                @if(count($activeFilters) > 1)
+                                    <button type="button" class="ml-2 text-sm text-blue-600 hover:text-blue-800 focus:outline-none" wire:click="resetFilters">
+                                        {{ __('Effacer tous les filtres') }}
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
+                    </div>
                     
                     <!-- Panneau de sélection des colonnes -->
                     @if($showColumnsPanel)
@@ -484,7 +545,9 @@
 
                                         @if($visibleColumns['application_id'])
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">{{ $product->application_name }}</div>
+                                            <div class="text-sm text-gray-900">
+                                                {{ $product->application ? $product->application->application_name : '' }}
+                                            </div>
                                         </td>
                                         @endif
                                         
