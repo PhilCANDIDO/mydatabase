@@ -146,6 +146,14 @@ class ProductList extends Component
             'base_note' => null,
         ];
     }
+
+    //Reset only one filter
+    public function resetFilter($filterName)
+    {
+        if (isset($this->filters[$filterName])) {
+            $this->filters[$filterName] = null;
+        }
+    }
     
     public function copyToClipboard($text)
     {
@@ -157,6 +165,7 @@ class ProductList extends Component
         $this->permAuthorize('view data');
         
         $query = Product::query()
+            ->with('application')
             ->when(count($this->selectedFamilies) > 0, function ($query) {
                 return $query->whereIn('product_family_id', $this->selectedFamilies);
             })
@@ -170,7 +179,8 @@ class ProductList extends Component
         
         // Appliquer les filtres avancés
         if ($this->filters['application_id']) {
-            $query->where('application_id', $this->filters['application_id']);
+            $query
+                ->where('application_id', $this->filters['application_id']);
         }
         
         if ($this->filters['product_annee_sortie']) {
@@ -214,14 +224,26 @@ class ProductList extends Component
         $products = $query->paginate($this->perPage);
         
         // Récupérer les données pour les filtres et dropdowns
-        $productFamilies = ProductFamily::where('product_family_active', true)->get();
-        $applications = Application::where('application_active', true)->get();
-        $zoneGeos = ZoneGeo::where('zone_geo_active', true)->get();
-        $olfactiveFamilies = OlfactiveFamily::where('olfactive_family_active', true)->get();
-        $olfactiveNotes = OlfactiveNote::where('olfactive_note_active', true)->get();
+        $productFamilies = ProductFamily::where('product_family_active', true)
+            ->orderBy('product_family_name')
+            ->get();
+        $applications = Application::where('application_active', true)
+            -> orderBy('application_name')
+            ->get();
+        $zoneGeos = ZoneGeo::where('zone_geo_active', true)
+            ->orderBy('zone_geo_name')
+            ->get();
+        $olfactiveFamilies = OlfactiveFamily::where('olfactive_family_active', true)
+            ->OrderBy('olfactive_family_name')
+            ->get();
+        $olfactiveNotes = OlfactiveNote::where('olfactive_note_active', true)
+            ->OrderBy('olfactive_note_name')
+            ->get();
         
         // Famille affichées (pour les badges)
-        $displayedFamilies = ProductFamily::whereIn('id', $this->selectedFamilies)->get();
+        $displayedFamilies = ProductFamily::whereIn('id', $this->selectedFamilies)
+            ->orderBy('product_family_name')
+            ->get();
         
         return view('livewire.products.product-list', [
             'products' => $products,
