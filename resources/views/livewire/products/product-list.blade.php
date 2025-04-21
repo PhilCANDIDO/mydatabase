@@ -508,10 +508,38 @@
                                     </th>
                                     @endif
 
+                                    <!-- Afficher l'image rééle -->
                                     @if($visibleColumns['product_avatar'])
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('Avatar') }}
-                                    </th>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($product->product_avatar)
+                                            <div x-data="{ showFullImage: false }" class="relative">
+                                                <img src="{{ asset('storage/' . $product->product_avatar) }}" 
+                                                    alt="{{ $product->product_name }}" 
+                                                    class="h-10 w-10 rounded-full object-cover cursor-pointer transition-all hover:scale-105"
+                                                    @mouseenter="showFullImage = true"
+                                                    @mouseleave="showFullImage = false">
+                                                
+                                                <!-- Image agrandie au survol avec transition Alpine.js -->
+                                                <div x-show="showFullImage" 
+                                                    x-transition:enter="transition ease-out duration-200"
+                                                    x-transition:enter-start="opacity-0 scale-95"
+                                                    x-transition:enter-end="opacity-100 scale-100"
+                                                    x-transition:leave="transition ease-in duration-150"
+                                                    x-transition:leave-start="opacity-100 scale-100" 
+                                                    x-transition:leave-end="opacity-0 scale-95"
+                                                    class="absolute z-50 top-0 left-12 bg-white p-1 rounded-lg shadow-lg"
+                                                    style="display: none;">
+                                                    <img src="{{ asset('storage/' . $product->product_avatar) }}" 
+                                                        alt="{{ $product->product_name }}" 
+                                                        class="max-w-xs max-h-64 object-contain">
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                                                <!-- SVG inchangé -->
+                                            </div>
+                                        @endif
+                                    </td>
                                     @endif
                                     
                                     <!-- Actions -->

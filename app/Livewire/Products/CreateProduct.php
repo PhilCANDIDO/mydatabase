@@ -41,6 +41,7 @@ class CreateProduct extends Component
         'selectedFamily' => 'required|exists:product_families,id',
         'product_name' => 'required|string|max:255',
         'product_marque' => 'nullable|string|max:255',
+        'product_avatar' => 'nullable|image|mimes:jpg,jpeg,png,heic|max:2048|dimensions:min_width=100,min_height=100,max_width=2000,max_height=2000',
     ];
     
     // Règles de validation dynamiques en fonction de la famille

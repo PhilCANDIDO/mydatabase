@@ -86,12 +86,31 @@
                 <!-- Upload de l'avatar -->
                 <div class="mb-4">
                     <label for="product_avatar" class="block text-sm font-medium text-gray-700">{{ __('Avatar du produit') }}</label>
-                    <input type="file" id="product_avatar" wire:model="product_avatar" class="mt-1 block w-full" accept="image/*">
-                    @error('product_avatar') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                    <div class="mt-2 flex items-center">
+                        <input type="file" id="product_avatar" wire:model="product_avatar" 
+                               class="hidden" accept="image/png,image/jpeg,image/jpg,image/heic">
+                        <label for="product_avatar" 
+                               class="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <svg class="mr-2 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6.5 20H4a1 1 0 01-1-1v-1.5M20.5 20H18a1 1 0 01-1-1v-1.5M4 13h16M4 9h16M4 5h16"/>
+                            </svg>
+                            {{ __('Choisir une image') }}
+                        </label>
+                    </div>
+                    
+                    <div class="mt-2 text-sm text-gray-500">
+                        {{ __('Formats acceptés: JPG, PNG, HEIC - Max 2MB - Dimensions min: 100x100px, max: 2000x2000px') }}
+                    </div>
+                    
+                    @error('product_avatar') 
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                     
                     @if($product_avatar)
-                        <div class="mt-2">
-                            <img src="{{ $product_avatar->temporaryUrl() }}" class="h-20 w-20 object-cover rounded-lg shadow">
+                        <div class="mt-3">
+                            <p class="mb-2 text-sm text-gray-600">{{ __('Aperçu:') }}</p>
+                            <img src="{{ $product_avatar->temporaryUrl() }}" 
+                                 class="h-32 w-32 object-cover rounded-lg shadow border border-gray-200">
                         </div>
                     @endif
                 </div>
