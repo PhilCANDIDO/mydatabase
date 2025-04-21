@@ -151,7 +151,7 @@ class ProductList extends Component
     {
         $this->dispatch('copy-to-clipboard', text: $text);
     }
-    
+        
     public function render()
     {
         $this->permAuthorize('view data');
