@@ -14,6 +14,7 @@
     search: '',
     selected: @js($selected),
     displayValue: '',
+    dropPosition: 'bottom', // Nouvelle propriété pour la position
     init() {
         this.updateDisplayValue();
         this.$watch('selected', () => this.updateDisplayValue());
@@ -48,13 +49,33 @@
         // Utilisez $wire pour accéder directement au composant Livewire parent
         $wire.set('{{ $wireModel }}', optionValue);
         @endif
+    },
+    toggleDropdown() {
+        // Déterminer si le dropdown devrait s'ouvrir vers le haut ou le bas
+        if (!this.open) {
+            this.$nextTick(() => {
+                const button = this.$refs.dropdownButton;
+                const dropdownHeight = 300; // Hauteur estimée du dropdown
+                const windowHeight = window.innerHeight;
+                const buttonBottom = button.getBoundingClientRect().bottom;
+                
+                // Si l'espace en dessous est insuffisant, ouvrir vers le haut
+                if (buttonBottom + dropdownHeight > windowHeight) {
+                    this.dropPosition = 'top';
+                } else {
+                    this.dropPosition = 'bottom';
+                }
+            });
+        }
+        this.open = !this.open;
     }
 }" class="relative w-full">
     <label for="{{ $id }}" class="block text-sm font-medium text-gray-700 mb-1">{{ $label }}</label>
     
     <!-- Dropdown toggle button -->
-    <button @click="open = !open" 
+    <button @click="toggleDropdown" 
             type="button" 
+            x-ref="dropdownButton"
             id="{{ $id }}" 
             class="flex items-center justify-between w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
         <span x-text="displayValue || '{{ __('Tous') }}'"></span>
@@ -72,7 +93,8 @@
          x-transition:leave="transition ease-in duration-75" 
          x-transition:leave-start="transform opacity-100 scale-100" 
          x-transition:leave-end="transform opacity-0 scale-95" 
-         class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+         :class="{'bottom-full mb-1': dropPosition === 'top', 'top-full mt-1': dropPosition === 'bottom'}"
+         class="absolute z-50 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
         
         <!-- Search input -->
         <div class="p-2 sticky top-0 bg-white border-b border-gray-200">
