@@ -17,6 +17,16 @@
     init() {
         this.updateDisplayValue();
         this.$watch('selected', () => this.updateDisplayValue());
+        
+        // Écouter les changements de valeur du modèle Livewire
+        if ('{{ $wireModel }}') {
+            this.$wire.$watch('{{ $wireModel }}', (value) => {
+                if (this.selected !== value) {
+                    this.selected = value;
+                    this.updateDisplayValue();
+                }
+            });
+        }
     },
     updateDisplayValue() {
         if (this.selected) {

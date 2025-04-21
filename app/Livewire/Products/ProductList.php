@@ -76,6 +76,40 @@ class ProductList extends Component
         $this->selectedFamilies = ProductFamily::where('product_family_active', true)
             ->pluck('id')
             ->toArray();
+            
+        // Charger les préférences utilisateur si disponibles
+        $this->loadUserPreferences();
+    }
+    
+    /**
+     * Charge les préférences utilisateur pour les colonnes visibles et les filtres
+     */
+    protected function loadUserPreferences()
+    {
+        if (auth()->check()) {
+            // Si vous utilisez déjà un système de préférences utilisateur,
+            // vous pouvez l'implémenter ici
+            
+            // Exemple:
+            // $visibleColumns = auth()->user()->getPreference('products.visible_columns');
+            // if ($visibleColumns) {
+            //     $this->visibleColumns = $visibleColumns;
+            // }
+        }
+    }
+    
+    /**
+     * Sauvegarde les préférences utilisateur pour les colonnes visibles et les filtres
+     */
+    protected function saveUserPreferences()
+    {
+        if (auth()->check()) {
+            // Si vous utilisez déjà un système de préférences utilisateur,
+            // vous pouvez l'implémenter ici
+            
+            // Exemple:
+            // auth()->user()->setPreference('products.visible_columns', $this->visibleColumns);
+        }
     }
     
     public function updatingSearch()
@@ -130,6 +164,8 @@ class ProductList extends Component
             'base_note_1' => false,
             'base_note_2' => false,
         ];
+        
+        $this->saveUserPreferences();
     }
     
     public function resetFilters()
@@ -145,19 +181,38 @@ class ProductList extends Component
             'heart_note' => null,
             'base_note' => null,
         ];
+        
+        // Émettre un événement pour notifier les composants x-filter-dropdown
+        $this->dispatch('filters-reset');
     }
 
-    //Reset only one filter
+    /**
+     * Réinitialise un filtre spécifique
+     * 
+     * @param string $filterName Nom du filtre à réinitialiser
+     */
     public function resetFilter($filterName)
     {
         if (isset($this->filters[$filterName])) {
             $this->filters[$filterName] = null;
+            
+            // Émettre un événement pour notifier les composants x-filter-dropdown
+            $this->dispatch('filter-reset', filterName: $filterName);
         }
     }
     
     public function copyToClipboard($text)
     {
         $this->dispatch('copy-to-clipboard', text: $text);
+    }
+    
+    /**
+     * Mise à jour d'une colonne visible
+     * Appelée lorsqu'un utilisateur modifie la sélection des colonnes
+     */
+    public function updatedVisibleColumns()
+    {
+        $this->saveUserPreferences();
     }
         
     public function render()

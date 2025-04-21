@@ -727,6 +727,7 @@
     <!-- JavaScript pour la fonctionnalité de copie dans le presse-papiers -->
     <script>
         document.addEventListener('livewire:init', () => {
+            // Gestion de la copie dans le presse-papiers
             Livewire.on('copy-to-clipboard', ({ text }) => {
                 navigator.clipboard.writeText(text)
                     .then(() => {
@@ -744,6 +745,20 @@
                     .catch(err => {
                         console.error('Erreur lors de la copie: ', err);
                     });
+            });
+    
+            // Écouter les événements de réinitialisation des filtres
+            Livewire.on('filter-reset', ({ filterName }) => {
+                // Alpine.js va automatiquement mettre à jour les composants via le système de réactivité
+                // Cette notification est utile pour le débogage
+                console.log(`Filtre réinitialisé: ${filterName}`);
+            });
+    
+            // Écouter l'événement de réinitialisation de tous les filtres
+            Livewire.on('filters-reset', () => {
+                // Alpine.js va automatiquement mettre à jour les composants via le système de réactivité
+                // Cette notification est utile pour le débogage
+                console.log('Tous les filtres ont été réinitialisés');
             });
         });
     </script>
