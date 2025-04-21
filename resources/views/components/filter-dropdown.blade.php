@@ -30,6 +30,14 @@
         return {{ json_encode($options) }}.filter(
             option => option.{{ $displayKey }}.toLowerCase().includes(this.search.toLowerCase())
         );
+    },
+    selectOption(optionValue) {
+        this.selected = optionValue;
+        this.open = false;
+        @if($wireModel)
+        // Utilisez $wire pour accéder directement au composant Livewire parent
+        $wire.set('{{ $wireModel }}', optionValue);
+        @endif
     }
 }" class="relative w-full">
     <label for="{{ $id }}" class="block text-sm font-medium text-gray-700 mb-1">{{ $label }}</label>
@@ -72,10 +80,7 @@
             <li class="px-2">
                 <button 
                     type="button" 
-                    @click="selected = null; open = false;" 
-                    @if($wireModel) 
-                        wire:click="{{ $wireModel }} = null" 
-                    @endif
+                    @click="selectOption(null)" 
                     class="w-full px-3 py-2 text-sm text-left hover:bg-gray-100 rounded-md"
                 >
                     {{ __('Tous') }}
@@ -86,10 +91,7 @@
                     <button 
                         type="button" 
                         x-text="option.{{ $displayKey }}" 
-                        @click="selected = option.{{ $valueKey }}; open = false;" 
-                        @if($wireModel) 
-                            x-on:click="{{ $wireModel }} = option.{{ $valueKey }}" 
-                        @endif
+                        @click="selectOption(option.{{ $valueKey }})" 
                         :class="{'bg-blue-100': selected == option.{{ $valueKey }}}" 
                         class="w-full px-3 py-2 text-sm text-left hover:bg-gray-100 rounded-md"
                     ></button>

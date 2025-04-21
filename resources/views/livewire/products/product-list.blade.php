@@ -362,15 +362,9 @@
                                     </th>
                                     @endif
                                     
-                                    @if($visibleColumns['zone_geo'])
+                                    @if($visibleColumns['application_id'])
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('Zone Géographique') }}
-                                    </th>
-                                    @endif
-                                    
-                                    @if($visibleColumns['olfactive_family'])
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('Famille Olfactive') }}
+                                        {{ __('Applications') }}
                                     </th>
                                     @endif
                                     
@@ -390,6 +384,18 @@
                                                 @endif
                                             </span>
                                         @endif
+                                    </th>
+                                    @endif
+
+                                    @if($visibleColumns['olfactive_family'])
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {{ __('Famille Olfactive') }}
+                                    </th>
+                                    @endif
+
+                                    @if($visibleColumns['zone_geo'])
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {{ __('Zone Géographique') }}
                                     </th>
                                     @endif
                                     
@@ -473,6 +479,12 @@
                                         @if($visibleColumns['product_marque'])
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900">{{ $product->product_marque }}</div>
+                                        </td>
+                                        @endif
+
+                                        @if($visibleColumns['application_id'])
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">{{ $product->application_name }}</div>
                                         </td>
                                         @endif
                                         
