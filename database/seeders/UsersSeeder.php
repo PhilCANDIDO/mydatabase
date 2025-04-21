@@ -14,7 +14,7 @@ class UsersSeeder extends Seeder
      */
     public function run(): void
     {
-        // Créer les utilisateurs de test
+        // Créer l'utilisateurs Reader@mydatabase.test
         $readerUser = User::where('email', 'Reader@mydatabase.test')->first();
         if (!$readerUser) {
             $readerUser = User::create([
@@ -23,10 +23,11 @@ class UsersSeeder extends Seeder
                 'password' => Hash::make('azertyui'), // Change
             ]);
         }
-        // Assigner le rôle Super à l'admin
+  
         $readerUser->assignRole('Reader');
         $this->command->info('Reader User assigned role: Reader');
 
+        // Créer l'utilisateurs Writer@mydatabase.test
         $writerUser = User::where('email', 'Writer@mydatabase.test')->first();
         if (!$writerUser) {
             $writerUser = User::create([
@@ -35,8 +36,21 @@ class UsersSeeder extends Seeder
                 'password' => Hash::make('azertyui'), // Change
             ]);
         }
-        // Assigner le rôle Super à l'admin
+
         $writerUser->assignRole('Writer');
         $this->command->info('Writer User assigned role: Writer');
+
+        // Créer l'utilisateurs Superviser@mydatabase.test
+        $SuperviserUser = User::where('email', 'Superviser@mydatabase.test')->first();
+        if (!$SuperviserUser) {
+            $SuperviserUser = User::create([
+                'name' => 'Superviser User',
+                'email' => 'Superviser@mydatabase.test',
+                'password' => Hash::make('azertyui'), // Change
+            ]);
+        }
+
+        $SuperviserUser->assignRole('Superviser');
+        $this->command->info('Superviser User assigned role: Superviser');
     }
 }

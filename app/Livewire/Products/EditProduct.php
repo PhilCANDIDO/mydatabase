@@ -45,7 +45,7 @@ class EditProduct extends Component
         $rules = [
             'product_name' => 'required|string|max:255',
             'product_marque' => 'nullable|string|max:255',
-            'new_product_avatar' => 'nullable|image|max:1024',
+            'new_product_avatar' => 'nullable|image|mimes:jpg,jpeg,png,heic|max:2048|dimensions:min_width=100,min_height=100,max_width=2000,max_height=2000',
         ];
         
         // Règles dynamiques en fonction de la famille
