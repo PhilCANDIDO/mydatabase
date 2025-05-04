@@ -15,38 +15,18 @@ class ZoneGeosSeeder extends Seeder
     {
         $zoneGeos = [
             [
-                'zone_geo_name' => 'Amérique du Nord',
-                'zone_geo_desc' => 'Canada, États-Unis, Mexique et pays d\'Amérique centrale.',
-                'zone_geo_active' => true,
-            ],
-            [
-                'zone_geo_name' => 'Amérique Latine',
-                'zone_geo_desc' => 'Pays d\'Amérique du Sud et centrale où l\'on parle majoritairement l\'espagnol et le portugais.',
+                'zone_geo_name' => 'Amérique',
+                'zone_geo_desc' => 'Pays d\'Amérique du nord et du sud.',
                 'zone_geo_active' => true,
             ],
             [
                 'zone_geo_name' => 'Europe',
-                'zone_geo_desc' => 'Pays du continent européen hors France.',
+                'zone_geo_desc' => 'Pays du continent européen .',
                 'zone_geo_active' => true,
             ],
             [
-                'zone_geo_name' => 'France',
-                'zone_geo_desc' => 'Marché français métropolitain et DOM-TOM.',
-                'zone_geo_active' => true,
-            ],
-            [
-                'zone_geo_name' => 'Asie du Nord',
-                'zone_geo_desc' => 'Chine, Japon, Corée, Mongolie et régions associées.',
-                'zone_geo_active' => true,
-            ],
-            [
-                'zone_geo_name' => 'Asie du Sud',
-                'zone_geo_desc' => 'Inde, Pakistan, Népal, Bangladesh, Sri Lanka et pays d\'Asie du Sud-Est.',
-                'zone_geo_active' => true,
-            ],
-            [
-                'zone_geo_name' => 'Pacifique',
-                'zone_geo_desc' => 'Australie, Nouvelle-Zélande et îles du Pacifique.',
+                'zone_geo_name' => 'Asie',
+                'zone_geo_desc' => 'Pays d\'asie.',
                 'zone_geo_active' => true,
             ],
             [
@@ -55,13 +35,8 @@ class ZoneGeosSeeder extends Seeder
                 'zone_geo_active' => true,
             ],
             [
-                'zone_geo_name' => 'Afrique du Nord',
-                'zone_geo_desc' => 'Pays du Maghreb et Égypte.',
-                'zone_geo_active' => true,
-            ],
-            [
-                'zone_geo_name' => 'Afrique Subsaharienne',
-                'zone_geo_desc' => 'Pays africains au sud du Sahara.',
+                'zone_geo_name' => 'Afrique',
+                'zone_geo_desc' => 'Pays africains et du Maghreb.',
                 'zone_geo_active' => true,
             ],
         ];
