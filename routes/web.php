@@ -12,7 +12,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductFamilyController;
 use App\Http\Controllers\ReferenceDataController;
 
-Route::view('/', 'welcome');
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
